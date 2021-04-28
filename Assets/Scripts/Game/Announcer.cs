@@ -1,0 +1,158 @@
+﻿using Actors;
+using Cavern;
+using UnityEngine;
+using UnityEngine.UI;
+
+namespace Game {
+    [RequireComponent(typeof(AudioSource3D))]
+    public class Announcer : MonoBehaviour {
+        // TODO: game over after final round, full restart or back to menu (level select?)
+        // TODO: round timers and win count display
+        // TODO: camera shakes on hits
+
+        /// <summary>
+        /// Round announcement sounds for all rounds.
+        /// </summary>
+        [Tooltip("Round announcement sounds for all rounds.")]
+        public AudioClip[] rounds;
+
+        /// <summary>
+        /// Round announcement sound count for each round.
+        /// </summary>
+        [Tooltip("Round announcement sound count for each round.")]
+        public int[] clipsPerRound;
+
+        /// <summary>
+        /// Round announcement sounds for round endings.
+        /// </summary>
+        [Tooltip("Round announcement sounds for round endings.")]
+        public AudioClip[] kos;
+
+        /// <summary>
+        /// Round announcement sound count for each round's ending.
+        /// </summary>
+        [Tooltip("Round announcement sound count for each round's ending.")]
+        public int[] clipsPerKO;
+
+        /// <summary>
+        /// Time out announcement sounds.
+        /// </summary>
+        [Tooltip("Time out announcement sounds.")]
+        public AudioClip[] timeOuts;
+
+        /// <summary>
+        /// Time out announcement sound count for each voice line.
+        /// </summary>
+        [Tooltip("Time out announcement sound count for each voice line.")]
+        public int[] clipsPerTimeOut;
+
+        public AudioClip[] victorySounds;
+
+        // TODO: death sounds by the same logic
+
+        /// <summary>
+        /// A fight is in progress.
+        /// </summary>
+        public bool Playing { get; set; }
+
+        public Actor Fighter1;
+        public GameObject[] fighter1RoundsWon;
+        public Actor Fighter2;
+        public GameObject[] fighter2RoundsWon;
+        public int roundCount = 3;
+        public int roundTime = 30;
+        public Text roundTimeText;
+        public AnnouncementText roundText;
+
+        AudioSource3D source;
+
+        int fighter1Wins, fighter2Wins, timeRemaining;
+        float roundCooldown = float.NaN, koCooldown = float.NaN, timeOutCooldown = float.NaN, timerCooldown = 1;
+
+        int TimeRemaining {
+            get => timeRemaining;
+            set => roundTimeText.text = (timeRemaining = value).ToString();
+        }
+
+        AudioClip GetClip(AudioClip[] set, int[] perRound, int roundOverride = -1) {
+            int round = fighter1Wins + fighter2Wins;
+            if (fighter1Wins == roundCount - 1 && fighter2Wins == roundCount - 1)
+                round = clipsPerRound.Length - 1;
+            if (roundOverride != -1)
+                round = roundOverride;
+            int skipClips = 0;
+            for (int i = 0; i < round; ++i)
+                skipClips += perRound[i];
+            return set[Random.Range(skipClips, skipClips + perRound[round])];
+        }
+
+        void PrepareNextRound() {
+            Fighter1.Health = Fighter1.maxHealth;
+            Fighter2.Health = Fighter2.maxHealth;
+            AudioClip announcement = GetClip(rounds, clipsPerRound);
+            if (fighter1Wins == roundCount - 1 && fighter2Wins == roundCount - 1)
+                roundText.NewText("Final Round");
+            else
+                roundText.NewText("Round " + (fighter1Wins + fighter2Wins + 1));
+            source.PlayOneShot(announcement);
+            roundCooldown = announcement.length;
+            TimeRemaining = roundTime;
+        }
+
+        public void Lost(Actor loser) {
+            Playing = false;
+            AudioClip announcement = GetClip(kos, clipsPerKO);
+            source.PlayOneShot(announcement);
+            koCooldown = announcement.length;
+            if (loser == Fighter1)
+                fighter2RoundsWon[fighter2Wins++].SetActive(true);
+            else
+                fighter1RoundsWon[fighter1Wins++].SetActive(true);
+            timerCooldown = 1;
+            if (fighter1Wins == roundCount || fighter2Wins == roundCount) {
+                source.PlayOneShot(victorySounds[Random.Range(0, victorySounds.Length)]);
+                loser.Died();
+            } else
+                loser.KnockedOut();
+        }
+
+        void Start() {
+            Fighter1.Handler = Fighter2.Handler = this;
+            source = GetComponent<AudioSource3D>();
+            PrepareNextRound();
+        }
+
+        void Update() {
+            if (!float.IsNaN(roundCooldown) && (roundCooldown -= Time.deltaTime) <= 0) {
+                roundCooldown = float.NaN;
+                Playing = true;
+            }
+            if (!float.IsNaN(koCooldown) && (koCooldown -= Time.deltaTime) <= 0) {
+                koCooldown = float.NaN;
+                if (fighter1Wins != roundCount && fighter2Wins != roundCount)
+                    PrepareNextRound();
+            }
+            if (!float.IsNaN(timeOutCooldown) && (timeOutCooldown -= Time.deltaTime) <= 0) {
+                timeOutCooldown = float.NaN;
+                if (Fighter1.Health == Fighter2.Health)
+                    PrepareNextRound();
+                else if (Fighter1.Health < Fighter2.Health)
+                    Lost(Fighter1);
+                else
+                    Lost(Fighter2);
+            }
+            if (Playing) {
+                timerCooldown -= Time.deltaTime;
+                if (timerCooldown < 0) {
+                    ++timerCooldown;
+                    if (--TimeRemaining == 0) {
+                        Playing = false;
+                        AudioClip announcement = GetClip(timeOuts, clipsPerTimeOut, Random.Range(0, clipsPerTimeOut.Length));
+                        source.PlayOneShot(announcement);
+                        timeOutCooldown = announcement.length;
+                    }
+                }
+            }
+        }
+    }
+}

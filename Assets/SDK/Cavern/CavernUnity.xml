@@ -1,0 +1,1119 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>CavernUnity</name>
+    </assembly>
+    <members>
+        <member name="T:Cavern.Atmosphere">
+            <summary>Creates an atmosphere of the given <see cref="F:Cavern.Atmosphere.Clips"/>.</summary>
+        </member>
+        <member name="F:Cavern.Atmosphere.Clips">
+            <summary>The possible clips that will be played at random positions.</summary>
+        </member>
+        <member name="F:Cavern.Atmosphere.Sources">
+            <summary>The amount of audio sources in the atmosphere.</summary>
+        </member>
+        <member name="F:Cavern.Atmosphere.Spherical">
+            <summary>Create a spherical environment instead of cubic.</summary>
+        </member>
+        <member name="F:Cavern.Atmosphere.MinDistance">
+            <summary>Minimal distance to spawn sources from the object's position.</summary>
+        </member>
+        <member name="F:Cavern.Atmosphere.MaxDistance">
+            <summary>Maximum distance to spawn sources from the object's position.</summary>
+        </member>
+        <member name="F:Cavern.Atmosphere.Volume">
+            <summary>Atmosphere volume.</summary>
+        </member>
+        <member name="F:Cavern.Atmosphere.Visualize">
+            <summary>Show created objects.</summary>
+        </member>
+        <member name="T:Cavern.AudioListener3D">
+            <summary>The center of the listening space. <see cref="T:Cavern.AudioSource3D"/>s will be rendered relative to this GameObject's position.</summary>
+        </member>
+        <member name="F:Cavern.AudioListener3D.Volume">
+            <summary>Global playback volume.</summary>
+        </member>
+        <member name="F:Cavern.AudioListener3D.LFEVolume">
+            <summary>LFE channels' volume.</summary>
+        </member>
+        <member name="F:Cavern.AudioListener3D.Range">
+            <summary>Hearing distance.</summary>
+        </member>
+        <member name="F:Cavern.AudioListener3D.Paused">
+            <summary>Disables any audio. Use this instead of enabling/disabling the script.</summary>
+        </member>
+        <member name="F:Cavern.AudioListener3D.Normalizer">
+            <summary>Adaption speed of the normalizer. 0 means disabled.</summary>
+        </member>
+        <member name="F:Cavern.AudioListener3D.LimiterOnly">
+            <summary>If active, the normalizer won't increase the volume above 100%.</summary>
+        </member>
+        <member name="F:Cavern.AudioListener3D.SampleRate">
+            <summary>Project sample rate (min. 44100). It's best to have all your audio clips in this sample rate for maximum performance.
+            </summary>
+        </member>
+        <member name="F:Cavern.AudioListener3D.UpdateRate">
+            <summary>Update interval in audio samples (min. 16). Lower values mean better interpolation, but require more processing power.
+            </summary>
+        </member>
+        <member name="F:Cavern.AudioListener3D.DelayTarget">
+            <summary>Maximum audio delay, defined in this FPS value. This is the minimum frame rate required to render continuous audio.</summary>
+        </member>
+        <member name="F:Cavern.AudioListener3D.AudioQuality">
+            <summary>Lower qualities increase performance for many sources.</summary>
+        </member>
+        <member name="F:Cavern.AudioListener3D.LFESeparation">
+            <summary>Only mix LFE tagged sources to subwoofers.</summary>
+        </member>
+        <member name="F:Cavern.AudioListener3D.DirectLFE">
+            <summary>Disable lowpass on the LFE channel.</summary>
+        </member>
+        <member name="F:Cavern.AudioListener3D.DisableUnityAudio">
+            <summary>Save performance by not remapping Unity's output to the user layout and only rendering Cavern sources.</summary>
+            <remarks>You should still use Unity's render engine for non-decompressed clips like background music to save memory.</remarks>
+        </member>
+        <member name="P:Cavern.AudioListener3D.volume">
+            <summary>Alias for <see cref="F:Cavern.AudioListener3D.Volume"/>.</summary>
+        </member>
+        <member name="P:Cavern.AudioListener3D.paused">
+            <summary>Disables any audio. Use this instead of enabling/disabling the script.</summary>
+        </member>
+        <member name="P:Cavern.AudioListener3D.IsSymmetric">
+            <summary>True if the layout is symmetric.</summary>
+        </member>
+        <member name="P:Cavern.AudioListener3D.Current">
+            <summary>The active <see cref="T:Cavern.AudioListener3D"/> instance.</summary>
+        </member>
+        <member name="P:Cavern.AudioListener3D.Output">
+            <summary>Result of the last update. Size is [<see cref="P:Cavern.Listener.Channels"/>.Length * <see cref="F:Cavern.AudioListener3D.UpdateRate"/>].</summary>
+        </member>
+        <member name="M:Cavern.AudioListener3D.ManualUpdate">
+            <summary>Manually generate one frame.</summary>
+        </member>
+        <member name="M:Cavern.AudioListener3D.GetLayoutName">
+            <summary>Current speaker layout name in the format of &lt;main&gt;.&lt;LFE&gt;.&lt;height&gt;.&lt;floor&gt;,
+            or simply "Virtualization".</summary>
+        </member>
+        <member name="F:Cavern.AudioListener3D.cavernListener">
+            <summary>Actual listener handled by this interface.</summary>
+        </member>
+        <member name="P:Cavern.AudioListener3D.SystemSampleRate">
+            <summary>Cached system sample rate.</summary>
+        </member>
+        <member name="F:Cavern.AudioListener3D.cachedSampleRate">
+            <summary>Cached <see cref="F:Cavern.AudioListener3D.SampleRate"/> for change detection.</summary>
+        </member>
+        <member name="F:Cavern.AudioListener3D.bufferPosition">
+            <summary>Filter buffer position, samples currently cached for output.</summary>
+        </member>
+        <member name="F:Cavern.AudioListener3D.filterOutput">
+            <summary>Samples to play with the filter.</summary>
+        </member>
+        <member name="F:Cavern.AudioListener3D.filterNormalizer">
+            <summary>Filter normalizer gain.</summary>
+        </member>
+        <member name="M:Cavern.AudioListener3D.OnAudioFilterRead(System.Single[],System.Int32)">
+            <summary>Output Cavern's generated audio as a filter.</summary>
+            <param name="unityBuffer">Output buffer</param>
+            <param name="unityChannels">Output channel count</param>
+        </member>
+        <member name="T:Cavern.AudioSource3D">
+            <summary>An audio object in 3D space, in stereo, or both.</summary>
+        </member>
+        <member name="F:Cavern.AudioSource3D.Clip">
+            <summary>The audio clip to play. If given, it will be converted to Cavern's <see cref="F:Cavern.AudioSource3D.Clip"/> format.</summary>
+        </member>
+        <member name="F:Cavern.AudioSource3D.Clip3D">
+            <summary>The audio clip to play in Cavern's format. Overrides <see cref="F:Cavern.AudioSource3D.Clip"/>.</summary>
+        </member>
+        <member name="F:Cavern.AudioSource3D.IsPlaying">
+            <summary>Continue playback of the source.</summary>
+        </member>
+        <member name="F:Cavern.AudioSource3D.Loop">
+            <summary>Restart the source when finished.</summary>
+        </member>
+        <member name="F:Cavern.AudioSource3D.Mute">
+            <summary>Mute the source.</summary>
+        </member>
+        <member name="F:Cavern.AudioSource3D.LFE">
+            <summary>Only mix this channel to subwoofers.</summary>
+        </member>
+        <member name="F:Cavern.AudioSource3D.RandomPosition">
+            <summary>Start playback from a random position.</summary>
+        </member>
+        <member name="F:Cavern.AudioSource3D.Volume">
+            <summary>Source playback volume.</summary>
+        </member>
+        <member name="F:Cavern.AudioSource3D.Pitch">
+            <summary>Playback speed with no pitch correction.</summary>
+        </member>
+        <member name="F:Cavern.AudioSource3D.StereoPan">
+            <summary>Balance between left and right channels.</summary>
+        </member>
+        <member name="F:Cavern.AudioSource3D.SpatialBlend">
+            <summary>Balance between 2D and 3D mixing. 0 is 2D and 1 is 3D.</summary>
+        </member>
+        <member name="F:Cavern.AudioSource3D.Size">
+            <summary>Audio source size relative to <see cref="F:Cavern.Listener.EnvironmentSize"/>. 0 is a point, 1 is the entire room.</summary>
+        </member>
+        <member name="F:Cavern.AudioSource3D.DopplerLevel">
+            <summary>Doppler effect scale, 1 is real.</summary>
+        </member>
+        <member name="F:Cavern.AudioSource3D.VolumeRolloff">
+            <summary>Volume decreasing function by distance.</summary>
+        </member>
+        <member name="F:Cavern.AudioSource3D.SpatialFilter">
+            <summary>Filter to be applied on the 3D mixed output.</summary>
+        </member>
+        <member name="P:Cavern.AudioSource3D.clip">
+            <summary>Alias for <see cref="F:Cavern.AudioSource3D.Clip"/>.</summary>
+        </member>
+        <member name="P:Cavern.AudioSource3D.dopplerLevel">
+            <summary>Alias for <see cref="F:Cavern.AudioSource3D.DopplerLevel"/>.</summary>
+        </member>
+        <member name="P:Cavern.AudioSource3D.isPlaying">
+            <summary>Alias for <see cref="F:Cavern.AudioSource3D.IsPlaying"/>.</summary>
+        </member>
+        <member name="P:Cavern.AudioSource3D.loop">
+            <summary>Alias for <see cref="F:Cavern.AudioSource3D.Loop"/>.</summary>
+        </member>
+        <member name="P:Cavern.AudioSource3D.mute">
+            <summary>Alias for <see cref="F:Cavern.AudioSource3D.Mute"/>.</summary>
+        </member>
+        <member name="P:Cavern.AudioSource3D.panStereo">
+            <summary>Alias for <see cref="F:Cavern.AudioSource3D.StereoPan"/>.</summary>
+        </member>
+        <member name="P:Cavern.AudioSource3D.pitch">
+            <summary>Alias for <see cref="F:Cavern.AudioSource3D.Pitch"/>.</summary>
+        </member>
+        <member name="P:Cavern.AudioSource3D.spatialBlend">
+            <summary>Alias for <see cref="F:Cavern.AudioSource3D.SpatialBlend"/>.</summary>
+        </member>
+        <member name="P:Cavern.AudioSource3D.volume">
+            <summary>Alias for <see cref="F:Cavern.AudioSource3D.Volume"/>.</summary>
+        </member>
+        <member name="P:Cavern.AudioSource3D.time">
+            <summary>Clip playback position in seconds.</summary>
+        </member>
+        <member name="P:Cavern.AudioSource3D.timeSamples">
+            <summary>Clip playback position in samples.</summary>
+        </member>
+        <member name="P:Cavern.AudioSource3D.Samples">
+            <summary>Returns the sample count for a single channel or -1 if there's no active clip.</summary>
+        </member>
+        <member name="M:Cavern.AudioSource3D.Play(System.Int64)">
+            <summary>Start playback from the beginning of the <see cref="P:Cavern.AudioSource3D.clip"/>.</summary>
+            <param name="delaySamples">Optional delay in samples</param>
+        </member>
+        <member name="M:Cavern.AudioSource3D.PlayDelayed(System.Single)">
+            <summary>Start playback from the beginning after the given time.</summary>
+            <param name="seconds">Delay in seconds</param>
+        </member>
+        <member name="M:Cavern.AudioSource3D.Pause">
+            <summary>Pause playback if it's not paused.</summary>
+        </member>
+        <member name="M:Cavern.AudioSource3D.UnPause">
+            <summary>Continue playback if it's paused.</summary>
+        </member>
+        <member name="M:Cavern.AudioSource3D.TogglePlay">
+            <summary>Toggle between playback and pause.</summary>
+        </member>
+        <member name="M:Cavern.AudioSource3D.Stop">
+            <summary>Pause playback and reset position. The next <see cref="M:Cavern.AudioSource3D.UnPause"/> will start playback from the beginning.</summary>
+        </member>
+        <member name="M:Cavern.AudioSource3D.PlayOneShot(UnityEngine.AudioClip,System.Single,System.Boolean)">
+            <summary>Play a clip once.</summary>
+            <param name="clip">Target clip</param>
+            <param name="volume">Playback volume</param>
+            <param name="isStatic">Do not play on the source's game object, play at the source's current position instead.</param>
+        </member>
+        <member name="M:Cavern.AudioSource3D.CopySettings(Cavern.AudioSource3D)">
+            <summary>Copy the settings of another <see cref="T:Cavern.AudioSource3D"/>.</summary>
+            <param name="from">Target source</param>
+        </member>
+        <member name="M:Cavern.AudioSource3D.AddFilter(Cavern.Filters.Filter)">
+            <summary>Add a new <see cref="F:Cavern.AudioSource3D.SpatialFilter"/> to this source.</summary>
+        </member>
+        <member name="M:Cavern.AudioSource3D.RemoveFilter(Cavern.Filters.Filter)">
+            <summary>Remove a <see cref="F:Cavern.AudioSource3D.SpatialFilter"/> from this source.</summary>
+        </member>
+        <member name="M:Cavern.AudioSource3D.PlayClipAtPoint(UnityEngine.AudioClip,UnityEngine.Vector3,System.Single)">
+            <summary>Play a clip once at the given world position.</summary>
+            <param name="clip">Target clip</param>
+            <param name="position">World position of the clip</param>
+            <param name="volume">Playback volume</param>
+        </member>
+        <member name="F:Cavern.AudioSource3D.cavernSource">
+            <summary>Cavern source handled by this component.</summary>
+        </member>
+        <member name="F:Cavern.AudioSource3D.internalPlayState">
+            <summary>Cached value of <see cref="F:Cavern.Source.IsPlaying"/>, to prevent overriding auto-stops and playback functions.</summary>
+        </member>
+        <member name="F:Cavern.AudioSource3D.lastClipHash">
+            <summary>Hash code of the last imported <see cref="T:UnityEngine.AudioClip"/> that has been converted to <see cref="T:Cavern.Clip"/>.</summary>
+        </member>
+        <member name="M:Cavern.AudioSource3D.SourceUpdate">
+            <summary>Synchronize this interface with <see cref="F:Cavern.AudioSource3D.cavernSource"/>.</summary>
+        </member>
+        <member name="T:Cavern.Cavern4D.Cavern4DBase">
+            <summary>Seat movement generation for <see cref="N:Cavern.Cavernize"/>.</summary>
+        </member>
+        <member name="F:Cavern.Cavern4D.Cavern4DBase.CavernSource">
+            <summary>The Cavernized audio object to be converted.</summary>
+        </member>
+        <member name="F:Cavern.Cavern4D.Cavern4DBase.RotationConstant">
+            <summary>Rotation aggressiveness.</summary>
+        </member>
+        <member name="F:Cavern.Cavern4D.Cavern4DBase.MaxRotationFace">
+            <summary>Maximum forward and backward seat rotation.</summary>
+        </member>
+        <member name="F:Cavern.Cavern4D.Cavern4DBase.MaxRotationSide">
+            <summary>Maximum sideways seat rotation.</summary>
+        </member>
+        <member name="F:Cavern.Cavern4D.Cavern4DBase.Rows">
+            <summary>Number of seat rows.</summary>
+        </member>
+        <member name="F:Cavern.Cavern4D.Cavern4DBase.Columns">
+            <summary>Number of seats in a row.</summary>
+        </member>
+        <member name="T:Cavern.Cavern4D.Cavern4DBase.SeatData">
+            <summary>Seat movement description.</summary>
+        </member>
+        <member name="F:Cavern.Cavern4D.Cavern4DBase.SeatData.Height">
+            <summary>Seat elevation in Cavernize's bounds.</summary>
+        </member>
+        <member name="F:Cavern.Cavern4D.Cavern4DBase.SeatData.Rotation">
+            <summary>Seat rotation Euler angles.</summary>
+        </member>
+        <member name="F:Cavern.Cavern4D.Cavern4DBase.SeatMovements">
+            <summary>Seat movement descriptions. The first dimension is the row, the second is the column.</summary>
+        </member>
+        <member name="T:Cavern.Cavern4D.Seat4D">
+            <summary>Applies a generated seat motion to an object.</summary>
+        </member>
+        <member name="F:Cavern.Cavern4D.Seat4D.Base">
+            <summary>The related 4D converter to fetch seat data from.</summary>
+        </member>
+        <member name="F:Cavern.Cavern4D.Seat4D.Row">
+            <summary>Seat position in the column from the front.</summary>
+        </member>
+        <member name="F:Cavern.Cavern4D.Seat4D.Column">
+            <summary>Seat position in the row from the left.</summary>
+        </member>
+        <member name="F:Cavern.Cavern4D.Seat4D.lastHeight">
+            <summary>Keep the last height for delta movement if the object is moved by something else.</summary>
+        </member>
+        <member name="T:Cavern.Cavernize.CavernizeOutput">
+            <summary>Outputs audio from a <see cref="T:Cavern.Cavernize.Cavernizer"/> at a given channel.</summary>
+        </member>
+        <member name="F:Cavern.Cavernize.CavernizeOutput.Master">
+            <summary>The Cavernizer to output audio from.</summary>
+        </member>
+        <member name="F:Cavern.Cavernize.CavernizeOutput.GroundLevel">
+            <summary>Output the ground level (lowpassed) or moving (highpassed) audio.</summary>
+        </member>
+        <member name="F:Cavern.Cavernize.CavernizeOutput.Channel">
+            <summary>Target channel to render.</summary>
+        </member>
+        <member name="T:Cavern.Cavernize.CavernizeOutput.CavernizeOutputSource">
+            <summary>Custom Cavern <see cref="T:Cavern.Source"/> for this component.</summary>
+        </member>
+        <member name="F:Cavern.Cavernize.CavernizeOutput.CavernizeOutputSource.Master">
+            <summary>The Cavernizer to output audio from.</summary>
+        </member>
+        <member name="F:Cavern.Cavernize.CavernizeOutput.CavernizeOutputSource.GroundLevel">
+            <summary>Output the ground level (lowpassed) or moving (highpassed) audio.</summary>
+        </member>
+        <member name="F:Cavern.Cavernize.CavernizeOutput.CavernizeOutputSource.Channel">
+            <summary>Target channel to render.</summary>
+        </member>
+        <member name="M:Cavern.Cavernize.CavernizeOutput.CavernizeOutputSource.Precollect">
+            <summary>Force the source to be played.</summary>
+        </member>
+        <member name="P:Cavern.Cavernize.CavernizeOutput.CavernizeOutputSource.Renderable">
+            <summary>Indicates that the source meets rendering requirements, and <see cref="M:Cavern.Cavernize.CavernizeOutput.CavernizeOutputSource.GetSamples"/> won't fail.</summary>
+        </member>
+        <member name="M:Cavern.Cavernize.CavernizeOutput.CavernizeOutputSource.GetSamples">
+            <summary>Get the next sample block from <see cref="F:Cavern.Cavernize.CavernizeOutput.CavernizeOutputSource.Master"/>.</summary>
+        </member>
+        <member name="T:Cavern.Cavernize.SpatializedChannel">
+            <summary>All the data <see cref="T:Cavern.Cavernize.Cavernizer"/> needs for a single channel.</summary>
+        </member>
+        <member name="F:Cavern.Cavernize.SpatializedChannel.Channel">
+            <summary>Channel position and type information.</summary>
+        </member>
+        <member name="F:Cavern.Cavernize.SpatializedChannel.Output">
+            <summary>Samples to split between <see cref="P:Cavern.Cavernize.SpatializedChannel.MovingSource"/> and <see cref="P:Cavern.Cavernize.SpatializedChannel.GroundSource"/>.</summary>
+        </member>
+        <member name="F:Cavern.Cavernize.SpatializedChannel.WrittenOutput">
+            <summary>There is available output data, and the channel should be rendered.</summary>
+        </member>
+        <member name="P:Cavern.Cavernize.SpatializedChannel.MovingSource">
+            <summary>High frequency data with height information.</summary>
+        </member>
+        <member name="P:Cavern.Cavernize.SpatializedChannel.GroundSource">
+            <summary>Low frequency data that stays on the ground.</summary>
+        </member>
+        <member name="P:Cavern.Cavernize.SpatializedChannel.Height">
+            <summary>The moving part's normalized height from the ground.</summary>
+        </member>
+        <member name="F:Cavern.Cavernize.SpatializedChannel.TicksTook">
+            <summary>Times the sources called for a set of samples. Numbers >= 2 indicate that the next frame should be mixed.</summary>
+        </member>
+        <member name="P:Cavern.Cavernize.SpatializedChannel.MovingRenderer">
+            <summary>Renderer for <see cref="P:Cavern.Cavernize.SpatializedChannel.MovingSource"/>.</summary>
+        </member>
+        <member name="P:Cavern.Cavernize.SpatializedChannel.GroundRenderer">
+            <summary>Renderer for <see cref="P:Cavern.Cavernize.SpatializedChannel.GroundSource"/>.</summary>
+        </member>
+        <member name="F:Cavern.Cavernize.SpatializedChannel.visualize">
+            <summary>Enable visualization of this channel in the next frame.</summary>
+        </member>
+        <member name="T:Cavern.Cavernize.Cavernizer">
+            <summary>Adds height to each channel of a regular surround mix.</summary>
+        </member>
+        <member name="F:Cavern.Cavernize.Cavernizer.Clip">
+            <summary>The audio clip to convert.</summary>
+        </member>
+        <member name="F:Cavern.Cavernize.Cavernizer.Clip3D">
+            <summary>The audio clip to convert in Cavern's format. Overrides <see cref="F:Cavern.Cavernize.Cavernizer.Clip"/>.</summary>
+        </member>
+        <member name="F:Cavern.Cavernize.Cavernizer.IsPlaying">
+            <summary>Continue playback of the source.</summary>
+        </member>
+        <member name="F:Cavern.Cavernize.Cavernizer.Loop">
+            <summary>Restart the source when finished.</summary>
+        </member>
+        <member name="F:Cavern.Cavernize.Cavernizer.UpdatesPerSecond">
+            <summary>How many times the object positions are calculated every second.</summary>
+        </member>
+        <member name="F:Cavern.Cavernize.Cavernizer.Volume">
+            <summary>Source playback volume.</summary>
+        </member>
+        <member name="F:Cavern.Cavernize.Cavernizer.Effect">
+            <summary>3D audio effect strength.</summary>
+        </member>
+        <member name="F:Cavern.Cavernize.Cavernizer.Smoothness">
+            <summary>Smooth object movements.</summary>
+        </member>
+        <member name="F:Cavern.Cavernize.Cavernizer.MatrixUpmix">
+            <summary>Creates missing channels from existing ones. Works best if the source is matrix-encoded.
+            Not recommended for Gaming 3D setups.</summary>
+        </member>
+        <member name="F:Cavern.Cavernize.Cavernizer.CenterStays">
+            <summary>Don't spatialize the front channel. This can fix the speech from above anomaly if it's present.</summary>
+        </member>
+        <member name="F:Cavern.Cavernize.Cavernizer.GroundCrossover">
+            <summary>Keep all frequencies below this on the ground.</summary>
+        </member>
+        <member name="F:Cavern.Cavernize.Cavernizer.Visualize">
+            <summary>Show converted objects.</summary>
+        </member>
+        <member name="P:Cavern.Cavernize.Cavernizer.time">
+            <summary>Playback position in seconds.</summary>
+        </member>
+        <member name="F:Cavern.Cavernize.Cavernizer.timeSamples">
+            <summary>Playback position in samples.</summary>
+        </member>
+        <member name="F:Cavern.Cavernize.Cavernizer.unsetHeight">
+            <summary>This height value indicates if a channel is skipped in height processing.</summary>
+        </member>
+        <member name="F:Cavern.Cavernize.Cavernizer.clipSamples">
+            <summary>Imported audio data.</summary>
+        </member>
+        <member name="F:Cavern.Cavernize.Cavernizer.clipChannels">
+            <summary>Channel count of <see cref="F:Cavern.Cavernize.Cavernizer.Clip"/>.</summary>
+        </member>
+        <member name="F:Cavern.Cavernize.Cavernizer.clipLength">
+            <summary>Length of <see cref="F:Cavern.Cavernize.Cavernizer.Clip"/> in samples/channel.</summary>
+        </member>
+        <member name="F:Cavern.Cavernize.Cavernizer.updateRate">
+            <summary><see cref="F:Cavern.AudioListener3D.UpdateRate"/> for conversion.</summary>
+        </member>
+        <member name="F:Cavern.Cavernize.Cavernizer.oldSampleRate">
+            <summary>Cached <see cref="F:Cavern.AudioListener3D.SampleRate"/> as the listener is reconfigured for the Cavernize process.</summary>
+        </member>
+        <member name="F:Cavern.Cavernize.Cavernizer.oldUpdateRate">
+            <summary>Cached <see cref="F:Cavern.AudioListener3D.UpdateRate"/> as the listener is reconfigured for the Cavernize process.</summary>
+        </member>
+        <member name="F:Cavern.Cavernize.Cavernizer.mains">
+            <summary>The channels for a base 7.1 layout.</summary>
+        </member>
+        <member name="F:Cavern.Cavernize.Cavernizer.UpmixTargets">
+            <summary>Possible upmix targets, always created.</summary>
+        </member>
+        <member name="T:Cavern.AudioClip3D">
+            <summary>Wrapper for Cavern's audio content format to match Unity's <see cref="T:UnityEngine.AudioClip"/> signature.</summary>
+        </member>
+        <member name="P:Cavern.AudioClip3D.length">
+            <summary>The length of the clip in seconds.</summary>
+        </member>
+        <member name="P:Cavern.AudioClip3D.frequency">
+            <summary>Sampling rate of the clip.</summary>
+        </member>
+        <member name="P:Cavern.AudioClip3D.channels">
+            <summary>Channel count for the clip.</summary>
+        </member>
+        <member name="P:Cavern.AudioClip3D.samples">
+            <summary>The length of the clip in samples, for a single channel.</summary>
+        </member>
+        <member name="P:Cavern.AudioClip3D.ambisonic">
+            <summary>Returns true if this clip is ambisonic. Cavern is always ambisonic.</summary>
+        </member>
+        <member name="M:Cavern.AudioClip3D.#ctor(System.Single[][],System.Int32)">
+            <summary>Audio content.</summary>
+            <param name="data">Audio data, with the size of [channels][samples for given channel]</param>
+            <param name="sampleRate">Sample rate</param>
+        </member>
+        <member name="M:Cavern.AudioClip3D.#ctor(System.Single[],System.Int32,System.Int32)">
+            <summary>Audio content.</summary>
+            <param name="data">Audio data, with interlaced channels</param>
+            <param name="channels">Channel count</param>
+            <param name="sampleRate">Sample rate</param>
+        </member>
+        <member name="T:Cavern.FilterInterfaces.Biquad">
+            <summary>Apply a <see cref="T:Cavern.Filters.BiquadFilter"/> on the source this component is applied on.</summary>
+        </member>
+        <member name="T:Cavern.FilterInterfaces.Biquad.FilterTypes">
+            <summary>Possible biquad filter types.</summary>
+        </member>
+        <member name="F:Cavern.FilterInterfaces.Biquad.FilterTypes.Lowpass">
+            <summary>Lowpass filter.</summary>
+        </member>
+        <member name="F:Cavern.FilterInterfaces.Biquad.FilterTypes.Highpass">
+            <summary>Highpass filter.</summary>
+        </member>
+        <member name="F:Cavern.FilterInterfaces.Biquad.FilterTypes.Bandpass">
+            <summary>Bandpass filter.</summary>
+        </member>
+        <member name="F:Cavern.FilterInterfaces.Biquad.FilterTypes.Notch">
+            <summary>Notch filter.</summary>
+        </member>
+        <member name="F:Cavern.FilterInterfaces.Biquad.FilterTypes.Allpass">
+            <summary>Allpass filter.</summary>
+        </member>
+        <member name="F:Cavern.FilterInterfaces.Biquad.FilterTypes.PeakingEQ">
+            <summary>Peaking filter.</summary>
+        </member>
+        <member name="F:Cavern.FilterInterfaces.Biquad.FilterTypes.LowShelf">
+            <summary>Low shelf filter.</summary>
+        </member>
+        <member name="F:Cavern.FilterInterfaces.Biquad.FilterTypes.HighShelf">
+            <summary>High shelf filter.</summary>
+        </member>
+        <member name="F:Cavern.FilterInterfaces.Biquad.FilterType">
+            <summary>Applied type of biquad filter.</summary>
+        </member>
+        <member name="F:Cavern.FilterInterfaces.Biquad.CenterFreq">
+            <summary>Center frequency (-3 dB point) of the filter.</summary>
+        </member>
+        <member name="F:Cavern.FilterInterfaces.Biquad.Q">
+            <summary>Q-factor of the filter.</summary>
+        </member>
+        <member name="F:Cavern.FilterInterfaces.Biquad.Gain">
+            <summary>Gain of the filter in decibels.</summary>
+        </member>
+        <member name="F:Cavern.FilterInterfaces.Biquad.source">
+            <summary>The attached audio source.</summary>
+        </member>
+        <member name="F:Cavern.FilterInterfaces.Biquad.filter">
+            <summary>The attached selected filter.</summary>
+        </member>
+        <member name="F:Cavern.FilterInterfaces.Biquad.lastFilter">
+            <summary>Last set type of filter.</summary>
+        </member>
+        <member name="T:Cavern.FilterInterfaces.Comb">
+            <summary>Apply a <see cref="T:Cavern.Filters.Comb"/> filter on the source this component is applied on.</summary>
+        </member>
+        <member name="F:Cavern.FilterInterfaces.Comb.Frequency">
+            <summary>First minimum point.</summary>
+        </member>
+        <member name="F:Cavern.FilterInterfaces.Comb.Alpha">
+            <summary>Wet mix multiplier.</summary>
+        </member>
+        <member name="F:Cavern.FilterInterfaces.Comb.source">
+            <summary>The attached audio source.</summary>
+        </member>
+        <member name="F:Cavern.FilterInterfaces.Comb.filter">
+            <summary>The attached delay filter.</summary>
+        </member>
+        <member name="T:Cavern.FilterInterfaces.Delay">
+            <summary>Apply a <see cref="T:Cavern.Filters.Delay"/> filter on the source this component is applied on.</summary>
+        </member>
+        <member name="F:Cavern.FilterInterfaces.Delay.DelayTime">
+            <summary>Delay in seconds.</summary>
+        </member>
+        <member name="F:Cavern.FilterInterfaces.Delay.source">
+            <summary>The attached audio source.</summary>
+        </member>
+        <member name="F:Cavern.FilterInterfaces.Delay.filter">
+            <summary>The attached delay filter.</summary>
+        </member>
+        <member name="T:Cavern.FilterInterfaces.DistanceBasedLowpass">
+            <summary>The further the source from the listener, the deeper this effect will make its sound.</summary>
+        </member>
+        <member name="F:Cavern.FilterInterfaces.DistanceBasedLowpass.Strength">
+            <summary>Effect strength multiplier.</summary>
+        </member>
+        <member name="F:Cavern.FilterInterfaces.DistanceBasedLowpass.source">
+            <summary>The attached audio source.</summary>
+        </member>
+        <member name="F:Cavern.FilterInterfaces.DistanceBasedLowpass.filter">
+            <summary>The attached lowpass filter.</summary>
+        </member>
+        <member name="T:Cavern.FilterInterfaces.FilterNotExistsException">
+            <summary>Represents that a filter does not exists.</summary>
+        </member>
+        <member name="T:Cavern.FilterInterfaces.SimpleEcho">
+            <summary>Apply an <see cref="T:Cavern.Filters.Echo"/> filter on the source this component is applied on.</summary>
+        </member>
+        <member name="F:Cavern.FilterInterfaces.SimpleEcho.Strength">
+            <summary>Effect strength.</summary>
+        </member>
+        <member name="F:Cavern.FilterInterfaces.SimpleEcho.Delay">
+            <summary>Delay between echoes in seconds.</summary>
+        </member>
+        <member name="F:Cavern.FilterInterfaces.SimpleEcho.source">
+            <summary>The attached audio source.</summary>
+        </member>
+        <member name="F:Cavern.FilterInterfaces.SimpleEcho.filter">
+            <summary>The attached echo filter.</summary>
+        </member>
+        <member name="T:Cavern.FilterInterfaces.Echo3D">
+            <summary>Creates a spatial echo effect by bouncing sound on surfaces.</summary>
+        </member>
+        <member name="F:Cavern.FilterInterfaces.Echo3D.SpeedOfSound">
+            <summary>Speed of sound in units/s.</summary>
+        </member>
+        <member name="F:Cavern.FilterInterfaces.Echo3D.Detail">
+            <summary>Number of directions to check.</summary>
+        </member>
+        <member name="F:Cavern.FilterInterfaces.Echo3D.Bounces">
+            <summary>Maximum surface bounces.</summary>
+        </member>
+        <member name="F:Cavern.FilterInterfaces.Echo3D.DampeningFactor">
+            <summary>Bounce dampening multiplier.</summary>
+        </member>
+        <member name="F:Cavern.FilterInterfaces.Echo3D.MaxSamples">
+            <summary>Maximal echo travel time in samples, size of the convolution filter.</summary>
+        </member>
+        <member name="F:Cavern.FilterInterfaces.Echo3D.Layers">
+            <summary>Layers to bounce the sound off from.</summary>
+        </member>
+        <member name="F:Cavern.FilterInterfaces.Echo3D.source">
+            <summary>The attached audio source.</summary>
+        </member>
+        <member name="F:Cavern.FilterInterfaces.Echo3D.filter">
+            <summary>Convolution filter to process the echo.</summary>
+        </member>
+        <member name="T:Cavern.QuickEQ.MeasurementImporterStatus">
+            <summary>Status indicator for <see cref="T:Cavern.QuickEQ.MeasurementImporter"/>.</summary>
+        </member>
+        <member name="F:Cavern.QuickEQ.MeasurementImporterStatus.Preprocessing">
+            <summary>Finding measured channels in the source recording.</summary>
+        </member>
+        <member name="F:Cavern.QuickEQ.MeasurementImporterStatus.Processing">
+            <summary>Getting frequency and impulse response for each channel.</summary>
+        </member>
+        <member name="F:Cavern.QuickEQ.MeasurementImporterStatus.Done">
+            <summary>The import was finished and the related <see cref="T:Cavern.QuickEQ.SpeakerSweeper"/> instance was set up.</summary>
+        </member>
+        <member name="T:Cavern.QuickEQ.MeasurementImporter">
+            <summary>Imports a QuickEQ measurement in the background.</summary>
+        </member>
+        <member name="P:Cavern.QuickEQ.MeasurementImporter.Status">
+            <summary>Import process status.</summary>
+        </member>
+        <member name="P:Cavern.QuickEQ.MeasurementImporter.ProcessedChannel">
+            <summary>The currently processed channel. Available if the <see cref="P:Cavern.QuickEQ.MeasurementImporter.Status"/> indicates processing.</summary>
+        </member>
+        <member name="P:Cavern.QuickEQ.MeasurementImporter.Channels">
+            <summary>Total channels found in the measurement. Available if the <see cref="P:Cavern.QuickEQ.MeasurementImporter.Status"/> indicates processing.</summary>
+        </member>
+        <member name="F:Cavern.QuickEQ.MeasurementImporter.blockSize">
+            <summary>RMS level calculation interval.</summary>
+        </member>
+        <member name="F:Cavern.QuickEQ.MeasurementImporter.scrapSilence">
+            <summary>The largest length in samples not to consider noise.</summary>
+        </member>
+        <member name="F:Cavern.QuickEQ.MeasurementImporter.data">
+            <summary>Single-channel microphone recording of a QuickEQ measurement.</summary>
+        </member>
+        <member name="F:Cavern.QuickEQ.MeasurementImporter.sweeper">
+            <summary>Sweeper instance to put the results in.</summary>
+        </member>
+        <member name="F:Cavern.QuickEQ.MeasurementImporter.runner">
+            <summary>The task processing <see cref="F:Cavern.QuickEQ.MeasurementImporter.data"/>.</summary>
+        </member>
+        <member name="M:Cavern.QuickEQ.MeasurementImporter.#ctor(System.Single[],System.Int32,Cavern.QuickEQ.SpeakerSweeper)">
+            <summary>Start importing a previous measurement. Status can be tracked in <see cref="P:Cavern.QuickEQ.MeasurementImporter.Status"/>.</summary>
+            <param name="samples">Single-channel microphone recording of a QuickEQ measurement</param>
+            <param name="sampleRate">Sample rate of <paramref name="samples"/></param>
+            <param name="sweeper">Sweeper instance to put the results in</param>
+        </member>
+        <member name="T:Cavern.QuickEQ.MeasurementImporter.Ramp">
+            <summary>An edge in a signal.</summary>
+        </member>
+        <member name="F:Cavern.QuickEQ.MeasurementImporter.Ramp.Rising">
+            <summary>Marks a rising edge.</summary>
+        </member>
+        <member name="M:Cavern.QuickEQ.MeasurementImporter.GetRMSBlocks(System.Single[])">
+            <summary>Get RMS values in blocks the size of <see cref="F:Cavern.QuickEQ.MeasurementImporter.blockSize"/>.</summary>
+        </member>
+        <member name="M:Cavern.QuickEQ.MeasurementImporter.GetNoiseLevel(System.Single[])">
+            <summary>Guess the noise level by putting it 3 decibels above the lowest non-zero RMS block
+            or at zero if many blocks are zero.</summary>
+        </member>
+        <member name="M:Cavern.QuickEQ.MeasurementImporter.GetRamps(System.Single[],System.Single)">
+            <summary>Find edges (jumps between low level and high level or noise and signal).</summary>
+            <param name="samples">Signal to find edges in</param>
+            <param name="highLevel">Signal level considered high level</param>
+        </member>
+        <member name="M:Cavern.QuickEQ.MeasurementImporter.GetFFTSize(System.Collections.Generic.List{Cavern.QuickEQ.MeasurementImporter.Ramp})">
+            <summary>Based on distances between ramps, guess the FFT size of the measurement.</summary>
+        </member>
+        <member name="M:Cavern.QuickEQ.MeasurementImporter.Process">
+            <summary>Process the <see cref="F:Cavern.QuickEQ.MeasurementImporter.data"/> and set up the <see cref="F:Cavern.QuickEQ.MeasurementImporter.sweeper"/>.</summary>
+        </member>
+        <member name="T:Cavern.QuickEQ.SweepChannel">
+            <summary>Runs the sweep of a <see cref="T:Cavern.QuickEQ.SpeakerSweeper"/> with a correct delay for the given channel.</summary>
+        </member>
+        <member name="F:Cavern.QuickEQ.SweepChannel.Channel">
+            <summary>Target output channel.</summary>
+        </member>
+        <member name="F:Cavern.QuickEQ.SweepChannel.Sweeper">
+            <summary>Sweeper to use the sweep reference of.</summary>
+        </member>
+        <member name="T:Cavern.QuickEQ.SweepChannel.SweepChannelSource">
+            <summary>Custom Cavern <see cref="T:Cavern.Source"/> for this component.</summary>
+        </member>
+        <member name="F:Cavern.QuickEQ.SweepChannel.SweepChannelSource.Channel">
+            <summary>Target output channel.</summary>
+        </member>
+        <member name="F:Cavern.QuickEQ.SweepChannel.SweepChannelSource.Sweeper">
+            <summary>Sweeper to use the sweep reference of.</summary>
+        </member>
+        <member name="F:Cavern.QuickEQ.SweepChannel.SweepChannelSource.rendered">
+            <summary>Rendered output array kept to save allocation time.</summary>
+        </member>
+        <member name="T:Cavern.QuickEQ.SpeakerSweeper">
+            <summary>Measures the frequency response of all output channels.</summary>
+        </member>
+        <member name="F:Cavern.QuickEQ.SpeakerSweeper.StartFreq">
+            <summary>Frequency at the beginning of the sweep.</summary>
+        </member>
+        <member name="F:Cavern.QuickEQ.SpeakerSweeper.EndFreq">
+            <summary>Frequency at the end of the sweep.</summary>
+        </member>
+        <member name="F:Cavern.QuickEQ.SpeakerSweeper.EndFreqLFE">
+            <summary>Maximum checked frequency for LFE channels. Other frequencites will be suppressed.</summary>
+        </member>
+        <member name="F:Cavern.QuickEQ.SpeakerSweeper.SweepGain">
+            <summary>Measurement signal gain in decibels relative to full scale.</summary>
+        </member>
+        <member name="F:Cavern.QuickEQ.SpeakerSweeper.SweepLength">
+            <summary>Length of the measurement signal. Must be a power of 2.</summary>
+        </member>
+        <member name="F:Cavern.QuickEQ.SpeakerSweeper.ResultAvailable">
+            <summary>The measurement is done and responses are available.</summary>
+        </member>
+        <member name="F:Cavern.QuickEQ.SpeakerSweeper.ExcitementResponses">
+            <summary>Raw recorded signals of output channels.</summary>
+        </member>
+        <member name="F:Cavern.QuickEQ.SpeakerSweeper.FreqResponses">
+            <summary>Frequency responses of output channels.</summary>
+        </member>
+        <member name="F:Cavern.QuickEQ.SpeakerSweeper.ImpResponses">
+            <summary>Impulse responses of output channels.</summary>
+        </member>
+        <member name="F:Cavern.QuickEQ.SpeakerSweeper.Equalizers">
+            <summary>Room correction, equalizer for each channel.</summary>
+        </member>
+        <member name="P:Cavern.QuickEQ.SpeakerSweeper.SweepReference">
+            <summary>Measurement signal samples.</summary>
+        </member>
+        <member name="P:Cavern.QuickEQ.SpeakerSweeper.Channel">
+            <summary>Channel under measurement. If <see cref="F:Cavern.QuickEQ.SpeakerSweeper.ResultAvailable"/> is false, but this equals the channel count,
+            <see cref="F:Cavern.QuickEQ.SpeakerSweeper.FreqResponses"/> are still being processed.</summary>
+        </member>
+        <member name="P:Cavern.QuickEQ.SpeakerSweeper.SampleRate">
+            <summary>Measurement sample rate. Set after an <see cref="P:Cavern.QuickEQ.SpeakerSweeper.InputDevice"/> was selected.</summary>
+        </member>
+        <member name="P:Cavern.QuickEQ.SpeakerSweeper.Progress">
+            <summary>Progress of the measurement process from 0 to 1.</summary>
+        </member>
+        <member name="P:Cavern.QuickEQ.SpeakerSweeper.InputDevice">
+            <summary>Name of the recording device. If empty, the system default will be used.</summary>
+        </member>
+        <member name="F:Cavern.QuickEQ.SpeakerSweeper.sweepResponse">
+            <summary>Microphone input.</summary>
+        </member>
+        <member name="F:Cavern.QuickEQ.SpeakerSweeper.measurementStarted">
+            <summary>A hack to fix lost playback from the initial hanging caused by sweep generation in <see cref="M:Cavern.QuickEQ.SpeakerSweeper.OnEnable"/>.</summary>
+        </member>
+        <member name="F:Cavern.QuickEQ.SpeakerSweeper.oldDirectLFE">
+            <summary>LFE pass-through before the measurement. LFE pass-through is on while measuring.</summary>
+        </member>
+        <member name="F:Cavern.QuickEQ.SpeakerSweeper.oldVirtualizer">
+            <summary>Virtualizer before the measurement. Virtualizer is off while measuring.</summary>
+        </member>
+        <member name="F:Cavern.QuickEQ.SpeakerSweeper.sweepFFT">
+            <summary>Measurement signal's Fourier transform for response calculation optimizations.</summary>
+        </member>
+        <member name="F:Cavern.QuickEQ.SpeakerSweeper.sweepFFTlow">
+            <summary>Measurement signal's Fourier transform for response calculation optimizations
+            and removed high frequencies for LFE noise suppression.</summary>
+        </member>
+        <member name="F:Cavern.QuickEQ.SpeakerSweeper.sweepFFTCache">
+            <summary>FFT constant cache for the sweep FFT size.</summary>
+        </member>
+        <member name="F:Cavern.QuickEQ.SpeakerSweeper.sweepers">
+            <summary>Sweep playback objects.</summary>
+        </member>
+        <member name="F:Cavern.QuickEQ.SpeakerSweeper.workers">
+            <summary>Response evaluator tasks.</summary>
+        </member>
+        <member name="M:Cavern.QuickEQ.SpeakerSweeper.RegenerateSweep">
+            <summary>Generate <see cref="P:Cavern.QuickEQ.SpeakerSweeper.SweepReference"/> and the related optimization values.</summary>
+        </member>
+        <member name="M:Cavern.QuickEQ.SpeakerSweeper.GetFrequencyResponse(System.Single[],System.Boolean)">
+            <summary>Get the frequency response of an external measurement that was performed with the current <see cref="F:Cavern.QuickEQ.SpeakerSweeper.sweepFFT"/>.</summary>
+        </member>
+        <member name="M:Cavern.QuickEQ.SpeakerSweeper.GetImpulseResponse(Cavern.Utilities.Complex[])">
+            <summary>Get the impulse response of a frequency response generated with <see cref="M:Cavern.QuickEQ.SpeakerSweeper.GetFrequencyResponse(System.Single[],System.Boolean)"/>.</summary>
+        </member>
+        <member name="T:Cavern.QuickEQ.NoisyChannel">
+            <summary>Generates noise on the selected output channel.</summary>
+        </member>
+        <member name="F:Cavern.QuickEQ.NoisyChannel.Channel">
+            <summary>Target output channel.</summary>
+        </member>
+        <member name="M:Cavern.QuickEQ.NoisyChannel.Awake">
+            <summary>Generates noise on the selected output channel.</summary>
+        </member>
+        <member name="T:Cavern.CavernizeRealtime">
+            <summary><see cref="N:Cavern.Cavernize"/> on a single source with diverted direct audio output.</summary>
+        </member>
+        <member name="F:Cavern.CavernizeRealtime.ChannelUsed">
+            <summary>The channel of the source to convert.</summary>
+        </member>
+        <member name="F:Cavern.CavernizeRealtime.Balanced">
+            <summary>Indicates a balanced input line.</summary>
+        </member>
+        <member name="F:Cavern.CavernizeRealtime.Divert">
+            <summary>Target output for the base channel (L).</summary>
+        </member>
+        <member name="F:Cavern.CavernizeRealtime.HeightDivert">
+            <summary>Target output for the height channel (R).</summary>
+        </member>
+        <member name="F:Cavern.CavernizeRealtime.Effect">
+            <summary>Height effect strength.</summary>
+        </member>
+        <member name="F:Cavern.CavernizeRealtime.Smoothness">
+            <summary>Output smoothing strength.</summary>
+        </member>
+        <member name="F:Cavern.CavernizeRealtime.BottomSpeakerHeight">
+            <summary>Base speaker's position on the horizontal axis.</summary>
+        </member>
+        <member name="F:Cavern.CavernizeRealtime.TopSpeakerHeight">
+            <summary>Height speaker's position on the horizontal axis.</summary>
+        </member>
+        <member name="F:Cavern.CavernizeRealtime.PeakDecay">
+            <summary>Peak decay rate multiplier.</summary>
+        </member>
+        <member name="P:Cavern.CavernizeRealtime.LastPeak">
+            <summary>Channel amplitude at the last update.</summary>
+        </member>
+        <member name="P:Cavern.CavernizeRealtime.Height">
+            <summary>Channel height at the last update.</summary>
+        </member>
+        <member name="F:Cavern.CavernizeRealtime.faderGain">
+            <summary>Gain modifier calculated from fader level.</summary>
+        </member>
+        <member name="P:Cavern.CavernizeRealtime.Fader">
+            <summary>The cinema processor's fader level. Required for height calculation as it is partially based on content volume.</summary>
+        </member>
+        <member name="T:Cavern.Debug.ArrayLevels">
+            <summary>Cinema channel array volume meters (7.1 + overhead sides).</summary>
+        </member>
+        <member name="F:Cavern.Debug.ArrayLevels.DynamicRange">
+            <summary>The lowest volume to show (in decibels).</summary>
+        </member>
+        <member name="M:Cavern.Debug.ArrayLevels.Setup">
+            <summary>Window dimension, name, and custom variable setup.</summary>
+        </member>
+        <member name="M:Cavern.Debug.ArrayLevels.Draw(System.Int32)">
+            <summary>Draw window contents.</summary>
+            <param name="wID">Window ID</param>
+        </member>
+        <member name="T:Cavern.Debug.LogDisplay">
+            <summary>Displays the last logged message.</summary>
+        </member>
+        <member name="F:Cavern.Debug.LogDisplay.LogLevel">
+            <summary>Maximum level to be reported.</summary>
+        </member>
+        <member name="F:Cavern.Debug.LogDisplay.lastLog">
+            <summary>Last received log message that matches the criteria.</summary>
+        </member>
+        <member name="M:Cavern.Debug.LogDisplay.Setup">
+            <summary>Window dimension, name, and custom variable setup.</summary>
+        </member>
+        <member name="M:Cavern.Debug.LogDisplay.Draw(System.Int32)">
+            <summary>Draw window contents.</summary>
+            <param name="wID">Window ID</param>
+        </member>
+        <member name="T:Cavern.Debug.Monitor">
+            <summary>Visualizer for all objects.</summary>
+        </member>
+        <member name="F:Cavern.Debug.Monitor.limitBounds">
+            <summary>Snap objects out of the room to walls.</summary>
+        </member>
+        <member name="F:Cavern.Debug.Monitor.AutoScale">
+            <summary>Normalize size to this by local scale if not 0.</summary>
+        </member>
+        <member name="P:Cavern.Debug.Monitor.LimitBounds">
+            <summary>Alias for <see cref="F:Cavern.Debug.Monitor.limitBounds"/> to be used with Unity Events.</summary>
+        </member>
+        <member name="F:Cavern.Debug.Monitor.edges">
+            <summary>Displayed room edges.</summary>
+        </member>
+        <member name="F:Cavern.Debug.Monitor.objects">
+            <summary>List of visualized objects.</summary>
+        </member>
+        <member name="F:Cavern.Debug.Monitor.roomScale">
+            <summary>Last environment scale.</summary>
+        </member>
+        <member name="T:Cavern.Debug.Monitor.Visualized">
+            <summary>A visualized object.</summary>
+        </member>
+        <member name="F:Cavern.Debug.Monitor.Visualized.Object">
+            <summary>Created object for visualization.</summary>
+        </member>
+        <member name="F:Cavern.Debug.Monitor.Visualized.Target">
+            <summary>The visualized source.</summary>
+        </member>
+        <member name="T:Cavern.Debug.SeatAdaptationDemo">
+            <summary>Setup window for <see cref="T:Cavern.SeatAdaptation"/>.</summary>
+        </member>
+        <member name="F:Cavern.Debug.SeatAdaptationDemo.Adaptor">
+            <summary>The Seat Adaptation component to configure.</summary>
+        </member>
+        <member name="M:Cavern.Debug.SeatAdaptationDemo.Setup">
+            <summary>Window dimension, name, and custom variable setup.</summary>
+        </member>
+        <member name="M:Cavern.Debug.SeatAdaptationDemo.Draw(System.Int32)">
+            <summary>Draw window contents.</summary>
+            <param name="ID">Window ID</param>
+        </member>
+        <member name="T:Cavern.Debug.Levels">
+            <summary>Current channel volume display window.</summary>
+        </member>
+        <member name="F:Cavern.Debug.Levels.jackColoring">
+            <summary>Use PC Jack output coloring for level bars. If false, channels will be colored by grouping.</summary>
+        </member>
+        <member name="F:Cavern.Debug.Levels.DynamicRange">
+            <summary>The lowest volume to show (in decibels).</summary>
+        </member>
+        <member name="F:Cavern.Debug.Levels.MaxWidth">
+            <summary>Maximum width of the Levels window. 0 means the screen's width.</summary>
+        </member>
+        <member name="P:Cavern.Debug.Levels.JackColoring">
+            <summary>Alias for <see cref="F:Cavern.Debug.Levels.jackColoring"/> to be used with Unity Events.</summary>
+        </member>
+        <member name="M:Cavern.Debug.Levels.Setup">
+            <summary>Window dimension, name, and custom variable setup.</summary>
+        </member>
+        <member name="M:Cavern.Debug.Levels.RepaintChannels">
+            <summary>Create a new <see cref="T:Cavern.Debug.Levels.ChannelLevelData"/> for each existing channels, and use the user-set color scheme.</summary>
+        </member>
+        <member name="M:Cavern.Debug.Levels.Draw(System.Int32)">
+            <summary>Draw window contents.</summary>
+            <param name="wID">Window ID</param>
+        </member>
+        <member name="T:Cavern.Helpers.ExternalSource">
+            <summary>Handles and synchronizes an <see cref="T:Cavern.AudioSource3D"/> with an input device.</summary>
+        </member>
+        <member name="F:Cavern.Helpers.ExternalSource.Source">
+            <summary>Target source.</summary>
+        </member>
+        <member name="F:Cavern.Helpers.ExternalSource.SourceName">
+            <summary>Audio input device.</summary>
+        </member>
+        <member name="F:Cavern.Helpers.ExternalSource.MaxLatency">
+            <summary>Maximum allowed latency.</summary>
+        </member>
+        <member name="P:Cavern.Helpers.ExternalSource.Latency">
+            <summary>Actual latency.</summary>
+        </member>
+        <member name="T:Cavern.Helpers.OneShotDestructor">
+            <summary>Destructs a one-shot <see cref="T:Cavern.AudioSource3D"/> after it finishes playback.</summary>
+        </member>
+        <member name="F:Cavern.Helpers.OneShotDestructor.source">
+            <summary>Source to destruct</summary>
+        </member>
+        <member name="F:Cavern.Helpers.OneShotDestructor.destroyGameObject">
+            <summary>Destroy the parent GameObject after playback.</summary>
+        </member>
+        <member name="M:Cavern.Helpers.OneShotDestructor.Constructor(UnityEngine.GameObject,Cavern.AudioSource3D,System.Boolean)">
+            <summary>Constructs a new destructor.</summary>
+            <param name="attachTo">Object containing a source to destruct</param>
+            <param name="targetSource">Source to destruct</param>
+            <param name="destroyAfter">Destroy the parent after playback</param>
+        </member>
+        <member name="T:Cavern.Helpers.ScaleByGain">
+            <summary>Scale an object by an <see cref="T:Cavern.AudioSource3D"/>'s current gain.</summary>
+        </member>
+        <member name="F:Cavern.Helpers.ScaleByGain.Source">
+            <summary>Target source.</summary>
+        </member>
+        <member name="F:Cavern.Helpers.ScaleByGain.Smoothing">
+            <summary>Object size change smoothness.</summary>
+        </member>
+        <member name="F:Cavern.Helpers.ScaleByGain.MinSize">
+            <summary>Object scale at minimum gain.</summary>
+        </member>
+        <member name="F:Cavern.Helpers.ScaleByGain.MaxSize">
+            <summary>Object scale at maximum gain.</summary>
+        </member>
+        <member name="F:Cavern.Helpers.ScaleByGain.DynamicRange">
+            <summary>Signal level at minimum size.</summary>
+        </member>
+        <member name="F:Cavern.Helpers.ScaleByGain.scale">
+            <summary>Actual scaling value.</summary>
+        </member>
+        <member name="T:Cavern.Spoofer.AudioListenerSpoofer">
+            <summary>Converts a regular <see cref="T:UnityEngine.AudioListener"/> to Cavern's <see cref="T:Cavern.AudioListener3D"/>.</summary>
+        </member>
+        <member name="F:Cavern.Spoofer.AudioListenerSpoofer.Source">
+            <summary>Listener to spoof.</summary>
+        </member>
+        <member name="F:Cavern.Spoofer.AudioListenerSpoofer.duality">
+            <summary>Use Unity's audio engine for clips that are not transferrable to Cavern (transferred from <see cref="T:Cavern.Spoofer.AutoSpoofer"/>).</summary>
+        </member>
+        <member name="T:Cavern.Spoofer.AudioSourceSpoofer">
+            <summary>Converts a regular <see cref="T:UnityEngine.AudioSource"/> to Cavern's <see cref="T:Cavern.AudioSource3D"/>.</summary>
+        </member>
+        <member name="F:Cavern.Spoofer.AudioSourceSpoofer.Mute">
+            <summary>-60 dB signal level. Not zero, but unlikely to be heard. In case a newly set 0 should be detected.</summary>
+        </member>
+        <member name="F:Cavern.Spoofer.AudioSourceSpoofer.Source">
+            <summary>Source to spoof.</summary>
+        </member>
+        <member name="F:Cavern.Spoofer.AudioSourceSpoofer.duality">
+            <summary>Use Unity's audio engine for clips that are not transferrable to Cavern (transferred from <see cref="T:Cavern.Spoofer.AutoSpoofer"/>).</summary>
+        </member>
+        <member name="T:Cavern.Spoofer.AutoSpoofer">
+            <summary>Automatically replaces Unity Audio with Cavern on the fly.</summary>
+        </member>
+        <member name="F:Cavern.Spoofer.AutoSpoofer.Duality">
+            <summary>Use Unity's audio engine for clips that are not transferrable to Cavern (anything that is not decompressed on load).</summary>
+        </member>
+        <member name="M:Cavern.Spoofer.AutoSpoofer.CreateSpoofer(System.Boolean)">
+            <summary>Create an <see cref="T:Cavern.Spoofer.AutoSpoofer"/> through the application if it doesn't exist.</summary>
+            <param name="debug">Display <see cref="T:Cavern.Debug.Levels"/> in the application.</param>
+        </member>
+        <member name="T:Cavern.Utilities.ColorUtils">
+            <summary>Useful color functions used in multiple classes.</summary>
+        </member>
+        <member name="F:Cavern.Utilities.ColorUtils.CavernBlue">
+            <summary>Cavern's symbolic blue.</summary>
+        </member>
+        <member name="F:Cavern.Utilities.ColorUtils.frontJack">
+            <summary>Standard color of the front (green) jack.</summary>
+        </member>
+        <member name="F:Cavern.Utilities.ColorUtils.centerJack">
+            <summary>Standard color of the center (orange) jack.</summary>
+        </member>
+        <member name="F:Cavern.Utilities.ColorUtils.sideJack">
+            <summary>Standard color of the side (gray) jack.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.ColorUtils.GetChannelColor(System.Int32)">
+            <summary>Get the color of a channel that should be used when displaying a massively multichannel system.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.ColorUtils.GetChannelColor(System.Int32,System.Boolean)">
+            <summary>Get the Cavern or Jack port color of a channel.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.ColorUtils.GetHueColor(System.Single)">
+            <summary>Get a color by hue value.</summary>
+            <param name="degrees">Hue value in degrees.</param>
+        </member>
+        <member name="M:Cavern.Utilities.ColorUtils.GetJackColor(System.Int32)">
+            <summary>Get a Jack color associated to a standard output channel by the layout currently set.
+            <see cref="F:Cavern.Utilities.ColorUtils.CavernBlue"/> is returned when the channel is invalid for the 8-channel Jack out standard.</summary>
+        </member>
+        <member name="T:Cavern.Utilities.VectorUtils">
+            <summary>Useful vector functions used in multiple classes.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.VectorUtils.VectorMatch(UnityEngine.Vector3)">
+            <summary>Converts a Unity vector to a Cavern vector.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.VectorUtils.VectorMatch(Cavern.Utilities.Vector)">
+            <summary>Converts a Cavern vector to a Unity vector.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.VectorUtils.VectorCompare(Cavern.Utilities.Vector,UnityEngine.Vector3)">
+            <summary>Checks if a Cavern and Unity vector are equal.</summary>
+        </member>
+        <member name="T:Cavern.Utilities.WindowBase">
+            <summary>Cavern window handling basics.</summary>
+        </member>
+        <member name="T:Cavern.Utilities.WindowBase.Corners">
+            <summary>Possible corners to open a window at.</summary>
+        </member>
+        <member name="F:Cavern.Utilities.WindowBase.Corners.TopLeft">
+            <summary>Top left corner.</summary>
+        </member>
+        <member name="F:Cavern.Utilities.WindowBase.Corners.TopRight">
+            <summary>Top right corner.</summary>
+        </member>
+        <member name="F:Cavern.Utilities.WindowBase.Corners.BottomLeft">
+            <summary>Bottom left corner.</summary>
+        </member>
+        <member name="F:Cavern.Utilities.WindowBase.Corners.BottomRight">
+            <summary>Borrom right corner.</summary>
+        </member>
+        <member name="F:Cavern.Utilities.WindowBase.Corner">
+            <summary>The corner to open the window at.</summary>
+        </member>
+        <member name="F:Cavern.Utilities.WindowBase.Position">
+            <summary>Current window position.</summary>
+        </member>
+        <member name="F:Cavern.Utilities.WindowBase.Matrix">
+            <summary>GUI draw matrix override.</summary>
+        </member>
+        <member name="F:Cavern.Utilities.WindowBase.width">
+            <summary>Window width.</summary>
+        </member>
+        <member name="F:Cavern.Utilities.WindowBase.height">
+            <summary>Window height.</summary>
+        </member>
+        <member name="F:Cavern.Utilities.WindowBase.title">
+            <summary>Window title.</summary>
+        </member>
+        <member name="F:Cavern.Utilities.WindowBase.ID">
+            <summary>Randomly generated window ID.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.WindowBase.Setup">
+            <summary>Window dimension, name, and custom variable setup.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.WindowBase.Draw(System.Int32)">
+            <summary>Draw window contents.</summary>
+            <param name="wID">Window ID</param>
+        </member>
+        <member name="T:Cavern.SeatAdaptation">
+            <summary>Modifies listener position based on seat occupation data.</summary>
+        </member>
+        <member name="F:Cavern.SeatAdaptation.Rows">
+            <summary>The number of rows in the room.</summary>
+        </member>
+        <member name="F:Cavern.SeatAdaptation.Columns">
+            <summary>Seats in each row.</summary>
+        </member>
+        <member name="F:Cavern.SeatAdaptation.Origin">
+            <summary>The center position of the room.</summary>
+        </member>
+        <member name="F:Cavern.SeatAdaptation.SeatsOccupied">
+            <summary>A [Rows, Columns] sized array containing if a seat is occupied.</summary>
+        </member>
+    </members>
+</doc>
