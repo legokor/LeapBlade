@@ -8,6 +8,7 @@ namespace Menus {
         public Actor[] actors;
         public Transform[] camTargets;
         public Transform returnTarget;
+        public AudioClip pauseSound;
 
         float targetVolume = 1;
 
@@ -34,11 +35,13 @@ namespace Menus {
         }
 
         new void Update() {
-            if (Input.GetKeyDown(KeyCode.Escape))
+            if (Input.GetKeyDown(KeyCode.Escape)) {
                 if (active)
                     Continue();
                 else
                     SetPause(true);
+                source.PlayOneShot(pauseSound);
+            }
             if (active)
                 camTarget = camTargets[Selected];
             AudioListener3D.Current.Volume = Mathf.Lerp(AudioListener3D.Current.Volume, targetVolume, 10 * time.DeltaTime);

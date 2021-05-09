@@ -11320,6 +11320,7 @@ GameObject:
   - component: {fileID: 963194233}
   - component: {fileID: 963194234}
   - component: {fileID: 963194230}
+  - component: {fileID: 963194231}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -11447,6 +11448,31 @@ MonoBehaviour:
   dx11BokehTexture: {fileID: 2800000, guid: 1167c0a28d11119930004d8a4241aa39, type: 3}
   dx11BokehScale: 1.2
   dx11BokehIntensity: 2
+--- !u!114 &963194231
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 963194225}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1969685551, guid: 3dfc02caa0d9e3845bd216f4a636a4dc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Clip: {fileID: 0}
+  IsPlaying: 1
+  Loop: 0
+  Mute: 0
+  LFE: 0
+  RandomPosition: 0
+  Volume: 1
+  Pitch: 1
+  StereoPan: 0
+  SpatialBlend: 0
+  Size: 0
+  DopplerLevel: 0
+  VolumeRolloff: 0
 --- !u!114 &963194232
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15754,6 +15780,9 @@ MonoBehaviour:
   - {fileID: 1810894303}
   - {fileID: 399724680}
   selection: {fileID: 731571376}
+  source: {fileID: 963194231}
+  move: {fileID: 8300000, guid: 51ef6a353588309429870d812ac54470, type: 3}
+  select: {fileID: 8300000, guid: 0c3c16fec0d8455429fa138d6b762f9c, type: 3}
   pauseObject: {fileID: 1452436377}
   actors:
   - {fileID: 689202093}
@@ -15762,6 +15791,7 @@ MonoBehaviour:
   - {fileID: 305875300}
   - {fileID: 1267750634}
   returnTarget: {fileID: 1007456082}
+  pauseSound: {fileID: 8300000, guid: eb8aa110103444f469ecaf6da23458b2, type: 3}
 --- !u!114 &1244525676
 MonoBehaviour:
   m_ObjectHideFlags: 0

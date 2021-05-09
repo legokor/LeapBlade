@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Cavern;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace Menus {
@@ -6,6 +7,11 @@ namespace Menus {
         public TimeGenerator time;
         public Button[] options;
         public GameObject selection;
+
+        [Header("Sounds")]
+        public AudioSource3D source;
+        public AudioClip move;
+        public AudioClip select;
 
         protected int Selected => selected;
 
@@ -38,10 +44,17 @@ namespace Menus {
             if (!active)
                 return;
 
-            if (Input.GetKeyDown(KeyCode.DownArrow))
+            if (Input.GetKeyDown(KeyCode.DownArrow)) {
                 selected = (selected + 1) % options.Length;
-            if (Input.GetKeyDown(KeyCode.UpArrow))
+                source.PlayOneShot(move);
+            }
+            if (Input.GetKeyDown(KeyCode.UpArrow)) {
                 selected = (options.Length + selected - 1) % options.Length;
+                source.PlayOneShot(move);
+            }
+            if (Input.GetKeyDown(KeyCode.Return)) {
+                source.PlayOneShot(select);
+            }
 
             RectTransform target = (RectTransform)options[selected].transform;
             selector.localPosition = Vector3.Lerp(selector.localPosition, target.localPosition + posOffset, pace);
