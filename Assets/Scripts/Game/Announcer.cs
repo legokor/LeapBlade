@@ -55,10 +55,10 @@ namespace Game {
         /// </summary>
         public bool Playing { get; set; }
 
-        public Actor Fighter1;
-        public GameObject[] fighter1RoundsWon;
-        public Actor Fighter2;
-        public GameObject[] fighter2RoundsWon;
+        public Actor fighterLeft;
+        public GameObject[] fighterLeftRoundsWon;
+        public Actor fighterRight;
+        public GameObject[] fighterRightRoundsWon;
         public int roundCount = 3;
         public int roundTime = 30;
         public Text roundTimeText;
@@ -87,8 +87,8 @@ namespace Game {
         }
 
         void PrepareNextRound() {
-            Fighter1.Health = Fighter1.maxHealth;
-            Fighter2.Health = Fighter2.maxHealth;
+            fighterLeft.Health = fighterLeft.maxHealth;
+            fighterRight.Health = fighterRight.maxHealth;
             AudioClip announcement = GetClip(rounds, clipsPerRound);
             if (fighter1Wins == roundCount - 1 && fighter2Wins == roundCount - 1)
                 roundText.NewText("Final Round");
@@ -99,15 +99,23 @@ namespace Game {
             TimeRemaining = roundTime;
         }
 
+        public void ActorHit(Actor victim) {
+            const float maxShake = .25f, hitScale = .05f;
+            Vector3 cameraShake = hitScale *
+                new Vector3(victim == fighterLeft ? -1 : 1, Random.Range(-maxShake, maxShake), Random.Range(-maxShake, maxShake));
+            Transform cam = Camera.main.transform;
+            cam.position += cam.rotation * cameraShake;
+        }
+
         public void Lost(Actor loser) {
             Playing = false;
             AudioClip announcement = GetClip(kos, clipsPerKO);
             source.PlayOneShot(announcement);
             koCooldown = announcement.length;
-            if (loser == Fighter1)
-                fighter2RoundsWon[fighter2Wins++].SetActive(true);
+            if (loser == fighterLeft)
+                fighterRightRoundsWon[fighter2Wins++].SetActive(true);
             else
-                fighter1RoundsWon[fighter1Wins++].SetActive(true);
+                fighterLeftRoundsWon[fighter1Wins++].SetActive(true);
             timerCooldown = 1;
             if (fighter1Wins == roundCount || fighter2Wins == roundCount) {
                 source.PlayOneShot(victorySounds[Random.Range(0, victorySounds.Length)]);
@@ -117,7 +125,7 @@ namespace Game {
         }
 
         void Start() {
-            Fighter1.Handler = Fighter2.Handler = this;
+            fighterLeft.Handler = fighterRight.Handler = this;
             source = GetComponent<AudioSource3D>();
             PrepareNextRound();
         }
@@ -134,12 +142,12 @@ namespace Game {
             }
             if (!float.IsNaN(timeOutCooldown) && (timeOutCooldown -= Time.deltaTime) <= 0) {
                 timeOutCooldown = float.NaN;
-                if (Fighter1.Health == Fighter2.Health)
+                if (fighterLeft.Health == fighterRight.Health)
                     PrepareNextRound();
-                else if (Fighter1.Health < Fighter2.Health)
-                    Lost(Fighter1);
+                else if (fighterLeft.Health < fighterRight.Health)
+                    Lost(fighterLeft);
                 else
-                    Lost(Fighter2);
+                    Lost(fighterRight);
             }
             if (Playing) {
                 timerCooldown -= Time.deltaTime;

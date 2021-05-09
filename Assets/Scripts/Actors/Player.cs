@@ -33,8 +33,8 @@ namespace Actors {
                 Health = 0;
                 if (Handler)
                     Handler.Lost(this);
-                // TODO: death animation
             }
+            Handler.ActorHit(this);
             return true;
         }
 

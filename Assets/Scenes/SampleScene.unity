@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.8032951, g: 0.70765287, b: 0.6226886, a: 1}
+  m_IndirectSpecularColor: {r: 0.8030166, g: 0.70750976, b: 0.62307364, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1035,7 +1035,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 13.2, y: 277.5, z: 0}
 --- !u!1 &74335881
 GameObject:
@@ -1458,7 +1458,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 13.2, y: 258, z: 0}
 --- !u!4 &96296514 stripped
 Transform:
@@ -12091,7 +12091,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4968447437888713482, guid: a93ff086c6d07fd4d8f2c7c386c3f0dc, type: 3}
       propertyPath: m_RootOrder
-      value: 4
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4968447437888713482, guid: a93ff086c6d07fd4d8f2c7c386c3f0dc, type: 3}
       propertyPath: m_LocalPosition.x
@@ -15698,13 +15698,13 @@ MonoBehaviour:
   victorySounds:
   - {fileID: 8300000, guid: d457512dec18f7c4197bb1f79df926ef, type: 3}
   - {fileID: 8300000, guid: 06fea0b0c17711847be81249faf36927, type: 3}
-  Fighter1: {fileID: 689202093}
-  fighter1RoundsWon:
+  fighterLeft: {fileID: 689202093}
+  fighterLeftRoundsWon:
   - {fileID: 362133645}
   - {fileID: 225436472}
   - {fileID: 2108547226}
-  Fighter2: {fileID: 1014537763}
-  fighter2RoundsWon:
+  fighterRight: {fileID: 1014537763}
+  fighterRightRoundsWon:
   - {fileID: 1042320283}
   - {fileID: 760862508}
   - {fileID: 1118585775}
