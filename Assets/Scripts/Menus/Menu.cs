@@ -53,6 +53,7 @@ namespace Menus {
                 source.PlayOneShot(move);
             }
             if (Input.GetKeyDown(KeyCode.Return)) {
+                options[selected].onClick.Invoke();
                 source.PlayOneShot(select);
             }
 
