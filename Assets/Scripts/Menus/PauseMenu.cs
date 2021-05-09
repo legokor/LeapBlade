@@ -1,7 +1,6 @@
 using Actors;
 using Cavern;
 using UnityEngine;
-using UnityStandardAssets.ImageEffects;
 
 namespace Menus {
     public class PauseMenu : Menu {
@@ -10,11 +9,13 @@ namespace Menus {
         public Transform[] camTargets;
         public Transform returnTarget;
 
+        float targetVolume = 1;
+
         void SetPause(bool state) {
             active = state;
             pauseObject.SetActive(state);
             Time.timeScale = state ? 0 : 1;
-            AudioListener3D.Current.Volume = state ? .25f : 1;
+            targetVolume = state ? .25f : 1;
             for (int i = 0; i < actors.Length; ++i)
                 actors[i].enabled = !state;
         }
@@ -28,6 +29,7 @@ namespace Menus {
 
         new void Start() {
             active = false;
+            camTarget = returnTarget;
             base.Start();
         }
 
@@ -39,6 +41,7 @@ namespace Menus {
                     SetPause(true);
             if (active)
                 camTarget = camTargets[Selected];
+            AudioListener3D.Current.Volume = Mathf.Lerp(AudioListener3D.Current.Volume, targetVolume, 10 * time.DeltaTime);
             base.Update();
         }
     }
