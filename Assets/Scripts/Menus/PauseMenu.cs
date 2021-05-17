@@ -1,6 +1,7 @@
 using Actors;
 using Cavern;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Menus {
     public class PauseMenu : Menu {
@@ -26,7 +27,7 @@ namespace Menus {
             SetPause(false);
         }
 
-        public void Exit() => Application.Quit();
+        public void Exit() => SceneManager.LoadScene(0);
 
         new void Start() {
             active = false;
