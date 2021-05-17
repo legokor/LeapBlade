@@ -982,6 +982,21 @@
         <member name="F:Cavern.Helpers.ScaleByGain.scale">
             <summary>Actual scaling value.</summary>
         </member>
+        <member name="T:Cavern.SpecialSources.InfiniteSource3D">
+            <summary>An <see cref="T:Cavern.AudioSource3D"/> with an intro <see cref="T:Cavern.Clip"/> and a looping part after.</summary>
+        </member>
+        <member name="F:Cavern.SpecialSources.InfiniteSource3D.intro">
+            <summary>Clip to start playback with.</summary>
+        </member>
+        <member name="F:Cavern.SpecialSources.InfiniteSource3D.intro3D">
+            <summary>Clip to start playback with in Cavern's format. Overrides <see cref="F:Cavern.SpecialSources.InfiniteSource3D.intro"/>.</summary>
+        </member>
+        <member name="F:Cavern.SpecialSources.InfiniteSource3D.loopClip">
+            <summary>Clip to play continuously after.</summary>
+        </member>
+        <member name="F:Cavern.SpecialSources.InfiniteSource3D.loopClip3D">
+            <summary>Clip to play continuously after in Cavern's format. Overrides <see cref="F:Cavern.SpecialSources.InfiniteSource3D.loopClip"/>.</summary>
+        </member>
         <member name="T:Cavern.Spoofer.AudioListenerSpoofer">
             <summary>Converts a regular <see cref="T:UnityEngine.AudioListener"/> to Cavern's <see cref="T:Cavern.AudioListener3D"/>.</summary>
         </member>
@@ -1012,6 +1027,12 @@
         <member name="M:Cavern.Spoofer.AutoSpoofer.CreateSpoofer(System.Boolean)">
             <summary>Create an <see cref="T:Cavern.Spoofer.AutoSpoofer"/> through the application if it doesn't exist.</summary>
             <param name="debug">Display <see cref="T:Cavern.Debug.Levels"/> in the application.</param>
+        </member>
+        <member name="T:Cavern.Utilities.Tunneler">
+            <summary>Provides synchronization between Unity and Cavern objects.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.Tunneler.TunnelClips(Cavern.Clip@,UnityEngine.AudioClip,Cavern.AudioClip3D,System.Int32@)">
+            <summary>Provides the <paramref name="source"/> a clip from either Cavern or Unity.</summary>
         </member>
         <member name="T:Cavern.Utilities.ColorUtils">
             <summary>Useful color functions used in multiple classes.</summary>

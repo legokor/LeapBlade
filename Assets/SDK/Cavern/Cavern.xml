@@ -116,6 +116,9 @@
         <member name="M:Cavern.Remapping.ChannelPrototype.Equals(Cavern.Remapping.ChannelPrototype)">
             <summary>Check if two channel prototypes are the same.</summary>
         </member>
+        <member name="M:Cavern.Remapping.ChannelPrototype.ToString">
+            <summary>Human-readable channel prototype data.</summary>
+        </member>
         <member name="T:Cavern.Remapping.RemappedChannel">
             <summary>Easily editable clip for <see cref="T:Cavern.Remapping.Remapper"/>'s channel spoofing.</summary>
         </member>
@@ -456,11 +459,11 @@
         <member name="F:Cavern.Source.distance">
             <summary>Distance from the listener.</summary>
         </member>
-        <member name="F:Cavern.Source.baseUpdateRate">
-            <summary><see cref="F:Cavern.Source.pitchedUpdateRate"/> without resampling.</summary>
-        </member>
-        <member name="F:Cavern.Source.pitchedUpdateRate">
+        <member name="P:Cavern.Source.PitchedUpdateRate">
             <summary>Samples required to match the listener's update rate after pitch changes.</summary>
+        </member>
+        <member name="F:Cavern.Source.baseUpdateRate">
+            <summary><see cref="P:Cavern.Source.PitchedUpdateRate"/> without resampling.</summary>
         </member>
         <member name="F:Cavern.Source.calculatedPitch">
             <summary>Actually used pitch multiplier including the Doppler effect.</summary>
@@ -706,6 +709,49 @@
             <param name="frontRight">Front right ID</param>
             <param name="rearLeft">Rear left ID</param>
             <param name="rearRight">Rear right ID</param>
+        </member>
+        <member name="T:Cavern.SpecialSources.InfiniteSourceMismatchException">
+            <summary>Important properties of concatenated clips don't match.</summary>
+        </member>
+        <member name="M:Cavern.SpecialSources.InfiniteSourceMismatchException.#ctor(System.String)">
+            <summary>Important properties of concatenated clips don't match.</summary>
+        </member>
+        <member name="T:Cavern.SpecialSources.InfiniteSource">
+            <summary>A <see cref="T:Cavern.Source"/> with an intro <see cref="T:Cavern.Clip"/> and a looping part after.</summary>
+        </member>
+        <member name="F:Cavern.SpecialSources.InfiniteSource.Intro">
+            <summary>Clip to start playback with.</summary>
+        </member>
+        <member name="F:Cavern.SpecialSources.InfiniteSource.LoopClip">
+            <summary>Clip to play continuously after.</summary>
+        </member>
+        <member name="M:Cavern.SpecialSources.InfiniteSource.Precollect">
+            <summary>Cache the samples if the source should be rendered. This wouldn't be thread safe.</summary>
+            <returns>The collection should be performed, as all requirements are met</returns>
+        </member>
+        <member name="M:Cavern.SpecialSources.InfiniteSource.GetSamples">
+            <summary>Get the next samples in the audio stream.</summary>
+        </member>
+        <member name="T:Cavern.Utilities.CavernAmp">
+            <summary>Drastically faster versions of some functions written in C++.</summary>
+        </member>
+        <member name="F:Cavern.Utilities.CavernAmp.available">
+            <summary>Is the CavernAmp DLL present and the platform is correct?</summary>
+        </member>
+        <member name="F:Cavern.Utilities.CavernAmp.bypass">
+            <summary>Force disable CavernAmp for performance benchmarks.</summary>
+        </member>
+        <member name="F:Cavern.Utilities.CavernAmp.tested">
+            <summary>True if CavernAmp DLL was checked if <see cref="F:Cavern.Utilities.CavernAmp.available"/>.</summary>
+        </member>
+        <member name="P:Cavern.Utilities.CavernAmp.Available">
+            <summary>Is the CavernAmp DLL present and the platform is correct?</summary>
+        </member>
+        <member name="P:Cavern.Utilities.CavernAmp.Bypass">
+            <summary>Force disable CavernAmp for performance benchmarks.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.CavernAmp.IsAvailable">
+            <summary>When the DLL is present near the executable and the platform matches, this returns true.</summary>
         </member>
         <member name="T:Cavern.Utilities.Complex">
             <summary>A complex number.</summary>
