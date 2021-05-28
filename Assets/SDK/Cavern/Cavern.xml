@@ -798,6 +798,18 @@
         <member name="M:Cavern.Utilities.Complex.Divide(Cavern.Utilities.Complex@)">
             <summary>Divide with another complex number.</summary>
         </member>
+        <member name="M:Cavern.Utilities.Complex.CompareTo(System.Single)">
+            <summary>Compare thie number to an <paramref name="other"/> if it precedes, follows, or matches it in a sort.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.Complex.CompareTo(Cavern.Utilities.Complex)">
+            <summary>Compare thie number to an <paramref name="other"/> if it precedes, follows, or matches it in a sort.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.Complex.Equals(System.Single)">
+            <summary>Check if this number equals an <paramref name="other"/>.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.Complex.Equals(Cavern.Utilities.Complex)">
+            <summary>Check if this number equals an <paramref name="other"/>.</summary>
+        </member>
         <member name="M:Cavern.Utilities.Complex.ToString">
             <summary>Display the complex number.</summary>
         </member>

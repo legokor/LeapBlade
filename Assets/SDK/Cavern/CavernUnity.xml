@@ -783,6 +783,9 @@
         <member name="M:Cavern.QuickEQ.SpeakerSweeper.GetImpulseResponse(Cavern.Utilities.Complex[])">
             <summary>Get the impulse response of a frequency response generated with <see cref="M:Cavern.QuickEQ.SpeakerSweeper.GetFrequencyResponse(System.Single[],System.Boolean)"/>.</summary>
         </member>
+        <member name="M:Cavern.QuickEQ.SpeakerSweeper.Dispose">
+            <summary>Free the resources used by this object.</summary>
+        </member>
         <member name="T:Cavern.QuickEQ.NoisyChannel">
             <summary>Generates noise on the selected output channel.</summary>
         </member>
