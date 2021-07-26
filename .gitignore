@@ -1,10 +1,12 @@
-.vsconfig
 *.csproj
 *.sln
 .vs/
+.vsconfig
+Assets/SDK/LeapMotion.meta
+Assets/SDK/LeapMotion/
 Library/
-UserSettings/
-Packages/
-obj/
 Logs/
+obj/
+Packages/
 Temp/
+UserSettings/

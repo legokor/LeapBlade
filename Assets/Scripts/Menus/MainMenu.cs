@@ -22,7 +22,6 @@ public class MainMenu : Menu {
         if (float.IsNaN(startTime))
             startTime = Time.unscaledTime;
         int dolly = (int)(Time.unscaledTime - startTime) / dollySwitchTime % dollies.Length;
-        cam.position = dollies[dolly].transform.position;
-        cam.rotation = dollies[dolly].transform.rotation;
+        cam.SetPositionAndRotation(dollies[dolly].transform.position, dollies[dolly].transform.rotation);
     }
 }

@@ -1420,6 +1420,8 @@ GameObject:
   - component: {fileID: 1553068264}
   - component: {fileID: 1553068267}
   - component: {fileID: 1553068268}
+  - component: {fileID: 1553068270}
+  - component: {fileID: 1553068269}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1545,6 +1547,37 @@ MonoBehaviour:
   VolumeRolloff: 0
   intro: {fileID: 8300000, guid: b0ba85426a8aaa946baf669a0737f786, type: 3}
   loopClip: {fileID: 8300000, guid: cf52d829e3a216d45999fd811b697e28, type: 3}
+--- !u!114 &1553068269
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1553068263}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3aaa027bec9a96c41bcf7be1719adedf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MouseIcon: {fileID: 10912, guid: 0000000000000000f000000000000000, type: 0}
+  OffHandIcon: {fileID: 0}
+  MouseSize: {x: 64, y: 64}
+  CenterPointer: 1
+--- !u!114 &1553068270
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1553068263}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45f0bce922ffd4c47800e7895fe4e35a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  headMounted: 1
+  leapLowerBounds: {x: -200, y: 100, z: -112.5}
+  leapUpperBounds: {x: 200, y: 300, z: 112.5}
 --- !u!1 &1602631455
 GameObject:
   m_ObjectHideFlags: 0

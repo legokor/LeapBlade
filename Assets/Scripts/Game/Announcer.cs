@@ -7,8 +7,6 @@ namespace Game {
     [RequireComponent(typeof(AudioSource3D))]
     public class Announcer : MonoBehaviour {
         // TODO: game over after final round, full restart or back to menu (level select?)
-        // TODO: round timers and win count display
-        // TODO: camera shakes on hits
 
         /// <summary>
         /// Round announcement sounds for all rounds.

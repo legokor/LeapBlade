@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 3aaa027bec9a96c41bcf7be1719adedf
+timeCreated: 1519001221
+licenseType: Free
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - MouseIcon: {fileID: 10912, guid: 0000000000000000f000000000000000, type: 0}
+  - OffHandIcon: {fileID: 2800000, guid: d48f8b391d2181e40ada37557eff43c8, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
