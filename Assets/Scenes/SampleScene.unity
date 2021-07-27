@@ -15782,6 +15782,8 @@ MonoBehaviour:
   - {fileID: 1810894303}
   - {fileID: 399724680}
   selection: {fileID: 731571376}
+  raycaster: {fileID: 1656963328}
+  eventSystem: {fileID: 1244525671}
   source: {fileID: 963194231}
   move: {fileID: 8300000, guid: 51ef6a353588309429870d812ac54470, type: 3}
   select: {fileID: 8300000, guid: 0c3c16fec0d8455429fa138d6b762f9c, type: 3}

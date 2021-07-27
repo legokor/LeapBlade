@@ -10,63 +10,63 @@ namespace LeapVR {
     [AddComponentMenu("Leap VR/Leap Mouse")]
     public class LeapMouse : Singleton<LeapMouse> {
         [Tooltip("Cursor texture.")]
-        public Texture MouseIcon;
+        public Texture mouseIcon;
         [Tooltip("On-screen off-hand marker.")]
-        public Texture OffHandIcon;
+        public Texture offHandIcon;
         [Tooltip("Size of the cursor.")]
-        public Vector2 MouseSize = new Vector2(64, 64);
+        public Vector2 mouseSize = new Vector2(64, 64);
         [Tooltip("The center of the cursor is the selection.")]
-        public bool CenterPointer = true;
+        public bool centerPointer = true;
 
         /// <summary>
         /// A tap happened in the last frame.
         /// </summary>
-        bool Tapped = false;
+        bool tapped = false;
         /// <summary>
         /// The UI element the cursor was over last frame.
         /// </summary>
-        Selectable LastHovered;
+        Selectable lastHovered;
         /// <summary>
         /// Dummy data required for some UI calls.
         /// </summary>
-        PointerEventData RandomPointerEventData;
+        PointerEventData pointer;
         /// <summary>
         /// Extended finger count at the last frame.
         /// </summary>
-        int LastFingerCount = 0;
+        int lastFingerCount = 0;
         /// <summary>
         /// Cached hand position.
         /// </summary>
-        Vector2 HandPosition = new Vector2(-1, -1);
+        Vector2 handPosition = new Vector2(-1, -1);
 
         /// <summary>
         /// Create a ray from the camera at the given screen point.
         /// </summary>
         public static Ray ScreenPointToRay() {
-            Vector2 LeapPosition = LeapMotion.Instance.PalmOnScreenXY();
-            return SBS.StereoRay(LeapPosition != LeapMotion.notAvailable ? new Vector3(LeapPosition.x * .5f, Screen.height - LeapPosition.y) :
+            Vector2 leapPosition = LeapMotion.Instance.PalmOnScreenXY();
+            return SBS.StereoRay(leapPosition != LeapMotion.notAvailable ? new Vector3(leapPosition.x * .5f, Screen.height - leapPosition.y) :
                 Input.mousePosition);
         }
 
         /// <summary>
         /// Gets if the user tapped or clicked.
         /// </summary>
-        public bool ActionDown() => LeapMotion.Instance.IsUsed() ? Tapped : Input.GetMouseButtonDown(0);
+        public bool ActionDown() => LeapMotion.Instance.IsUsed() ? tapped : Input.GetMouseButtonDown(0);
 
         /// <summary>
         /// Gets if the user grabs.
         /// </summary>
-        public bool Action() => LeapMotion.Instance.IsUsed() ? LastFingerCount == 0 : Input.GetMouseButton(0);
+        public bool Action() => LeapMotion.Instance.IsUsed() ? lastFingerCount == 0 : Input.GetMouseButton(0);
 
         /// <summary>
         /// Gets the pointer (mouse or main hand) position on screen.
         /// </summary>
         public Vector2 ScreenPosition() {
             if (LeapMotion.Instance.IsUsed()) {
-                Vector2 LeapPos = LeapMotion.Instance.PalmOnScreenXY();
-                return SBS.Enabled ? new Vector2(LeapPos.x * .5f, LeapPos.y) : LeapPos;
+                Vector2 leapPos = LeapMotion.Instance.PalmOnScreenXY();
+                return SBS.Enabled ? new Vector2(leapPos.x * .5f, leapPos.y) : leapPos;
             } else
-                return new Vector2(Input.mousePosition.x, Screen.height - Input.mousePosition.y);
+                return new Vector2(Input.mousePosition.x, Input.mousePosition.y);
         }
 
         /// <summary>
@@ -74,68 +74,68 @@ namespace LeapVR {
         /// </summary>
         public Vector2 ScreenPositionUnclamped() {
             if (LeapMotion.Instance.IsUsed()) {
-                Vector2 LeapPos = LeapMotion.Instance.PalmOnScreenXYUnclamped();
-                return SBS.Enabled ? new Vector2(LeapPos.x * .5f, LeapPos.y) : LeapPos;
+                Vector2 leapPos = LeapMotion.Instance.PalmOnScreenXYUnclamped();
+                return SBS.Enabled ? new Vector2(leapPos.x * .5f, leapPos.y) : leapPos;
             } else
                 return new Vector2(Input.mousePosition.x, Screen.height - Input.mousePosition.y);
         }
 
-        void Start() => RandomPointerEventData = new PointerEventData(GetComponent<EventSystem>());
+        void Start() => pointer = new PointerEventData(GetComponent<EventSystem>());
 
         /// <summary>
         /// Draw a cursor on the screen.
         /// </summary>
-        /// <param name="Position">Position on the screen</param>
-        /// <param name="FullSize">Draw a full size (not pressed) cursor</param>
-        /// <param name="Cursor">Cursor texture</param>
-        void DrawPointer(Vector2 Position, bool FullSize, Texture Cursor) {
-            Vector2 DrawStartPos = Position;
-            if (CenterPointer)
-                DrawStartPos -= MouseSize * (FullSize ? .6f : .5f);
-            GUI.DrawTexture(new Rect(DrawStartPos, MouseSize * (FullSize ? 1 : .8f)), Cursor);
+        /// <param name="position">Position on the screen</param>
+        /// <param name="fullSize">Draw a full size (not pressed) cursor</param>
+        /// <param name="cursor">Cursor texture</param>
+        void DrawPointer(Vector2 position, bool fullSize, Texture cursor) {
+            Vector2 drawStartPos = position;
+            if (centerPointer)
+                drawStartPos -= mouseSize * (fullSize ? .6f : .5f);
+            GUI.DrawTexture(new Rect(drawStartPos, mouseSize * (fullSize ? 1 : .8f)), cursor);
             if (SBS.Enabled) {
-                float HalfWidth = Screen.width * .5f;
-                DrawStartPos.x += DrawStartPos.x < HalfWidth ? HalfWidth : -HalfWidth;
-                GUI.DrawTexture(new Rect(DrawStartPos, MouseSize * (FullSize ? 1 : .8f)), Cursor);
+                float halfWidth = Screen.width * .5f;
+                drawStartPos.x += drawStartPos.x < halfWidth ? halfWidth : -halfWidth;
+                GUI.DrawTexture(new Rect(drawStartPos, mouseSize * (fullSize ? 1 : .8f)), cursor);
             }
         }
 
         void OnGUI() {
             if (LeapMotion.Instance.IsUsed()) {
-                DrawPointer(HandPosition, LastFingerCount != 0, MouseIcon);
-                if (OffHandIcon) {
-                    for (int OffHand = 1; OffHand < LeapMotion.Instance.GetHandCount(); ++OffHand) {
-                        Vector2 LeapPos = LeapMotion.Instance.PalmOnScreenXYUnclamped(OffHand);
-                        DrawPointer(SBS.Enabled ? new Vector2(LeapPos.x * .5f, LeapPos.y) : LeapPos,
-                            LeapMotion.Instance.ExtendedFingers(OffHand) != 0, OffHandIcon);
+                DrawPointer(handPosition, lastFingerCount != 0, mouseIcon);
+                if (offHandIcon) {
+                    for (int offHand = 1; offHand < LeapMotion.Instance.GetHandCount(); ++offHand) {
+                        Vector2 leapPos = LeapMotion.Instance.PalmOnScreenXYUnclamped(offHand);
+                        DrawPointer(SBS.Enabled ? new Vector2(leapPos.x * .5f, leapPos.y) : leapPos,
+                            LeapMotion.Instance.ExtendedFingers(offHand) != 0, offHandIcon);
                     }
                 }
             }
         }
 
         void Update() {
-            HandPosition = ScreenPosition();
-            int FingerCount = LeapMotion.Instance.ExtendedFingers();
-            Tapped = FingerCount == 0 && LastFingerCount != 0;
-            if (Physics.Raycast(SBS.StereoRay(new Vector2(HandPosition.x, Screen.height - HandPosition.y)), out RaycastHit hit)) {
-                Selectable Hovered = hit.collider.gameObject.GetComponentInChildren<Selectable>();
-                if (Hovered) {
-                    if (LastHovered && Hovered != LastHovered)
-                        LastHovered.OnPointerExit(RandomPointerEventData);
-                    Hovered.OnPointerEnter(RandomPointerEventData);
-                    LastHovered = Hovered;
+            handPosition = ScreenPosition();
+            int fingerCount = LeapMotion.Instance.ExtendedFingers();
+            tapped = fingerCount == 0 && lastFingerCount != 0;
+            if (Physics.Raycast(SBS.StereoRay(new Vector2(handPosition.x, Screen.height - handPosition.y)), out RaycastHit hit)) {
+                Selectable hovered = hit.collider.gameObject.GetComponentInChildren<Selectable>();
+                if (hovered) {
+                    if (lastHovered && hovered != lastHovered)
+                        lastHovered.OnPointerExit(pointer);
+                    hovered.OnPointerEnter(pointer);
+                    lastHovered = hovered;
                     if (ActionDown())
-                        if (Hovered.GetType() == typeof(Button))
-                            ((Button)Hovered).OnPointerClick(RandomPointerEventData);
-                        else if (Hovered.GetType() == typeof(Toggle))
-                            ((Toggle)Hovered).isOn ^= true;
+                        if (hovered.GetType() == typeof(Button))
+                            ((Button)hovered).OnPointerClick(pointer);
+                        else if (hovered.GetType() == typeof(Toggle))
+                            ((Toggle)hovered).isOn ^= true;
                         else
-                            Hovered.Select();
-                } else if (LastHovered)
-                    LastHovered.OnPointerExit(RandomPointerEventData);
-            } else if (LastHovered)
-                LastHovered.OnPointerExit(RandomPointerEventData);
-            LastFingerCount = FingerCount;
+                            hovered.Select();
+                } else if (lastHovered)
+                    lastHovered.OnPointerExit(pointer);
+            } else if (lastHovered)
+                lastHovered.OnPointerExit(pointer);
+            lastFingerCount = fingerCount;
         }
     }
 }
