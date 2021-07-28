@@ -10,6 +10,8 @@ namespace LeapVR {
     [AddComponentMenu("Leap VR/Leap Motion")]
     public class LeapMotion : Singleton<LeapMotion> {
         public bool headMounted = true;
+        [Tooltip("Reconnect after this many passed seconds.")]
+        public float connectionTimeout = 5;
         [Tooltip("Lower values of hand detection bounds.")]
         public Vector3 leapLowerBounds = new Vector3(-200, 100, -112.5f);
         [Tooltip("Upper values of hand detection bounds.")]
@@ -26,6 +28,11 @@ namespace LeapVR {
         Controller device;
 
         /// <summary>
+        /// First time a connection was tried to the controller;
+        /// </summary>
+        float started;
+
+        /// <summary>
         /// The Leap Motion frame just before the game's frame update.
         /// </summary>
         Frame lastFrame = new Frame();
@@ -38,7 +45,18 @@ namespace LeapVR {
         /// <summary>
         /// Connect to the device automatically on creation.
         /// </summary>
-        void Awake() => device = new Controller();
+        void Awake() {
+            device = new Controller();
+            started = Time.unscaledTime;
+        }
+
+        /// <summary>
+        /// Tries to reset the connection to the controller.
+        /// </summary>
+        public void Reconnect() {
+            OnDestroy();
+            Awake();
+        }
 
         /// <summary>
         /// Safely disconnect the device after use.
@@ -302,6 +320,11 @@ namespace LeapVR {
             if (headMounted && !device.IsPolicySet(Controller.PolicyFlag.POLICY_OPTIMIZE_HMD))
                 device.SetPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
             lastFrame = device.Frame();
+
+            if (!Connected && !float.IsNaN(started) && Time.unscaledTime - started > connectionTimeout) {
+                Reconnect();
+                started = float.NaN;
+            }
         }
     }
 }

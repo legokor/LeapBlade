@@ -1,11 +1,14 @@
+using LeapVR;
 using Menus;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class MainMenu : Menu {
     public RelativeDolly[] dollies;
     public int dollySwitchTime = 4;
     public Transform cam;
+    public Text leap;
 
     float startTime = float.NaN;
 
@@ -23,5 +26,8 @@ public class MainMenu : Menu {
             startTime = Time.unscaledTime;
         int dolly = (int)(Time.unscaledTime - startTime) / dollySwitchTime % dollies.Length;
         cam.SetPositionAndRotation(dollies[dolly].transform.position, dollies[dolly].transform.rotation);
+
+        if (LeapMotion.Instance && LeapMotion.Instance.Connected)
+            leap.color = Color.green;
     }
 }
