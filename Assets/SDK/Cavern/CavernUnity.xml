@@ -101,6 +101,9 @@
         <member name="P:Cavern.AudioListener3D.SystemSampleRate">
             <summary>Cached system sample rate.</summary>
         </member>
+        <member name="F:Cavern.AudioListener3D.startSkip">
+            <summary>Used to prevent sample generation before the first frame.</summary>
+        </member>
         <member name="F:Cavern.AudioListener3D.cachedSampleRate">
             <summary>Cached <see cref="F:Cavern.AudioListener3D.SampleRate"/> for change detection.</summary>
         </member>
@@ -152,7 +155,7 @@
             <summary>Balance between left and right channels.</summary>
         </member>
         <member name="F:Cavern.AudioSource3D.SpatialBlend">
-            <summary>Balance between 2D and 3D mixing. 0 is 2D and 1 is 3D.</summary>
+            <summary>Balance between 1D and 3D mixing. 0 is 1D and 1 is 3D.</summary>
         </member>
         <member name="F:Cavern.AudioSource3D.Size">
             <summary>Audio source size relative to <see cref="F:Cavern.Listener.EnvironmentSize"/>. 0 is a point, 1 is the entire room.</summary>
@@ -165,6 +168,9 @@
         </member>
         <member name="F:Cavern.AudioSource3D.SpatialFilter">
             <summary>Filter to be applied on the 3D mixed output.</summary>
+        </member>
+        <member name="F:Cavern.AudioSource3D.DistanceSimulation">
+            <summary>Simulates distance, not just direction when using virtualization.</summary>
         </member>
         <member name="P:Cavern.AudioSource3D.clip">
             <summary>Alias for <see cref="F:Cavern.AudioSource3D.Clip"/>.</summary>
@@ -199,8 +205,14 @@
         <member name="P:Cavern.AudioSource3D.timeSamples">
             <summary>Clip playback position in samples.</summary>
         </member>
+        <member name="P:Cavern.AudioSource3D.HasClip">
+            <summary>True if the source has an active clip.</summary>
+        </member>
         <member name="P:Cavern.AudioSource3D.Samples">
-            <summary>Returns the sample count for a single channel or -1 if there's no active clip.</summary>
+            <summary>Sample count for a single channel or -1 if there's no active clip.</summary>
+        </member>
+        <member name="P:Cavern.AudioSource3D.SampleRate">
+            <summary>Sample rate or -1 if there's no active clip.</summary>
         </member>
         <member name="M:Cavern.AudioSource3D.Play(System.Int64)">
             <summary>Start playback from the beginning of the <see cref="P:Cavern.AudioSource3D.clip"/>.</summary>
@@ -419,15 +431,6 @@
         <member name="F:Cavern.Cavernize.Cavernizer.unsetHeight">
             <summary>This height value indicates if a channel is skipped in height processing.</summary>
         </member>
-        <member name="F:Cavern.Cavernize.Cavernizer.clipSamples">
-            <summary>Imported audio data.</summary>
-        </member>
-        <member name="F:Cavern.Cavernize.Cavernizer.clipChannels">
-            <summary>Channel count of <see cref="F:Cavern.Cavernize.Cavernizer.Clip"/>.</summary>
-        </member>
-        <member name="F:Cavern.Cavernize.Cavernizer.clipLength">
-            <summary>Length of <see cref="F:Cavern.Cavernize.Cavernizer.Clip"/> in samples/channel.</summary>
-        </member>
         <member name="F:Cavern.Cavernize.Cavernizer.updateRate">
             <summary><see cref="F:Cavern.AudioListener3D.UpdateRate"/> for conversion.</summary>
         </member>
@@ -437,11 +440,8 @@
         <member name="F:Cavern.Cavernize.Cavernizer.oldUpdateRate">
             <summary>Cached <see cref="F:Cavern.AudioListener3D.UpdateRate"/> as the listener is reconfigured for the Cavernize process.</summary>
         </member>
-        <member name="F:Cavern.Cavernize.Cavernizer.mains">
-            <summary>The channels for a base 7.1 layout.</summary>
-        </member>
-        <member name="F:Cavern.Cavernize.Cavernizer.UpmixTargets">
-            <summary>Possible upmix targets, always created.</summary>
+        <member name="F:Cavern.Cavernize.Cavernizer.generator">
+            <summary>The 5.1/7.1 stream generator.</summary>
         </member>
         <member name="T:Cavern.AudioClip3D">
             <summary>Wrapper for Cavern's audio content format to match Unity's <see cref="T:UnityEngine.AudioClip"/> signature.</summary>
@@ -471,6 +471,9 @@
             <param name="data">Audio data, with interlaced channels</param>
             <param name="channels">Channel count</param>
             <param name="sampleRate">Sample rate</param>
+        </member>
+        <member name="M:Cavern.AudioClip3D.FromUnityClip(UnityEngine.AudioClip)">
+            <summary>Create a Cavern clip from a Unity clip.</summary>
         </member>
         <member name="T:Cavern.FilterInterfaces.Biquad">
             <summary>Apply a <see cref="T:Cavern.Filters.BiquadFilter"/> on the source this component is applied on.</summary>
@@ -562,6 +565,76 @@
         <member name="F:Cavern.FilterInterfaces.DistanceBasedLowpass.filter">
             <summary>The attached lowpass filter.</summary>
         </member>
+        <member name="T:Cavern.FilterInterfaces.Raytraced">
+            <summary>A filter built on raytracing with ideal geometric relections.</summary>
+        </member>
+        <member name="F:Cavern.FilterInterfaces.Raytraced.Detail">
+            <summary>Number of rays per plane.</summary>
+        </member>
+        <member name="F:Cavern.FilterInterfaces.Raytraced.Bounces">
+            <summary>Maximum surface bounces.</summary>
+        </member>
+        <member name="F:Cavern.FilterInterfaces.Raytraced.Layers">
+            <summary>Layers to bounce the sound off from.</summary>
+        </member>
+        <member name="M:Cavern.FilterInterfaces.Raytraced.DrawDebugRays">
+            <summary>Draw all emitted rays as gizmos.</summary>
+        </member>
+        <member name="T:Cavern.FilterInterfaces.SimulationSource">
+            <summary>Creates an IR simulation between this object and <see cref="T:Cavern.FilterInterfaces.SimulationTarget"/>s.</summary>
+        </member>
+        <member name="F:Cavern.FilterInterfaces.SimulationSource.SpeedOfSound">
+            <summary>Speed of sound in units/s.</summary>
+        </member>
+        <member name="F:Cavern.FilterInterfaces.SimulationSource.ChangePhase">
+            <summary>Change the phase of the sound wave on reflection.</summary>
+        </member>
+        <member name="F:Cavern.FilterInterfaces.SimulationSource.Targets">
+            <summary>Targets which absorb the emitted rays and generate their impulse response by.</summary>
+        </member>
+        <member name="F:Cavern.FilterInterfaces.SimulationSource.ShowAllRays">
+            <summary>Show all rays, even the ones that didn't hit.</summary>
+        </member>
+        <member name="F:Cavern.FilterInterfaces.SimulationSource.colliders">
+            <summary>Colliders for the <see cref="F:Cavern.FilterInterfaces.SimulationSource.Targets"/>.</summary>
+        </member>
+        <member name="F:Cavern.FilterInterfaces.SimulationSource.hitCount">
+            <summary>Hits in the last ray's path.</summary>
+        </member>
+        <member name="F:Cavern.FilterInterfaces.SimulationSource.hits">
+            <summary>The hit positions of the last ray's path.</summary>
+        </member>
+        <member name="M:Cavern.FilterInterfaces.SimulationSource.Update">
+            <summary>Render new impulse responses by the state of the scene.</summary>
+        </member>
+        <member name="T:Cavern.FilterInterfaces.SimulationTarget">
+            <summary>Creates an IR simulation between a <see cref="T:Cavern.FilterInterfaces.SimulationSource"/> and this object.</summary>
+        </member>
+        <member name="F:Cavern.FilterInterfaces.SimulationTarget.MaxSamples">
+            <summary>Maximal sound travel time in samples, size of the convolution filter.</summary>
+        </member>
+        <member name="F:Cavern.FilterInterfaces.SimulationTarget.Characteristics">
+            <summary>The impulse response of the simulated material. A single channel is required with the system sample rate.</summary>
+        </member>
+        <member name="F:Cavern.FilterInterfaces.SimulationTarget.Characteristics3D">
+            <summary>The impulse response of the simulated material in Cavern's format.
+            A single channel is required with the system sample rate.</summary>
+        </member>
+        <member name="F:Cavern.FilterInterfaces.SimulationTarget.filter">
+            <summary>Convolution filter to apply the character.</summary>
+        </member>
+        <member name="F:Cavern.FilterInterfaces.SimulationTarget.character">
+            <summary>Extracted samples from <see cref="F:Cavern.FilterInterfaces.SimulationTarget.Characteristics"/>.</summary>
+        </member>
+        <member name="P:Cavern.FilterInterfaces.SimulationTarget.Impulse">
+            <summary>Last generated FIR filter of the echo.</summary>
+        </member>
+        <member name="M:Cavern.FilterInterfaces.SimulationTarget.Prepare">
+            <summary>Prepare this target for an <see cref="P:Cavern.FilterInterfaces.SimulationTarget.Impulse"/> response update.</summary>
+        </member>
+        <member name="M:Cavern.FilterInterfaces.SimulationTarget.UpdateFilter">
+            <summary>Finalize a freshly generated impulse response.</summary>
+        </member>
         <member name="T:Cavern.FilterInterfaces.FilterNotExistsException">
             <summary>Represents that a filter does not exists.</summary>
         </member>
@@ -586,20 +659,14 @@
         <member name="F:Cavern.FilterInterfaces.Echo3D.SpeedOfSound">
             <summary>Speed of sound in units/s.</summary>
         </member>
-        <member name="F:Cavern.FilterInterfaces.Echo3D.Detail">
-            <summary>Number of directions to check.</summary>
-        </member>
-        <member name="F:Cavern.FilterInterfaces.Echo3D.Bounces">
-            <summary>Maximum surface bounces.</summary>
-        </member>
         <member name="F:Cavern.FilterInterfaces.Echo3D.DampeningFactor">
             <summary>Bounce dampening multiplier.</summary>
         </member>
         <member name="F:Cavern.FilterInterfaces.Echo3D.MaxSamples">
             <summary>Maximal echo travel time in samples, size of the convolution filter.</summary>
         </member>
-        <member name="F:Cavern.FilterInterfaces.Echo3D.Layers">
-            <summary>Layers to bounce the sound off from.</summary>
+        <member name="P:Cavern.FilterInterfaces.Echo3D.Impulse">
+            <summary>Last generated FIR filter of the echo.</summary>
         </member>
         <member name="F:Cavern.FilterInterfaces.Echo3D.source">
             <summary>The attached audio source.</summary>
@@ -1034,7 +1101,7 @@
         <member name="T:Cavern.Utilities.Tunneler">
             <summary>Provides synchronization between Unity and Cavern objects.</summary>
         </member>
-        <member name="M:Cavern.Utilities.Tunneler.TunnelClips(Cavern.Clip@,UnityEngine.AudioClip,Cavern.AudioClip3D,System.Int32@)">
+        <member name="M:Cavern.Utilities.Tunneler.TunnelClips(Cavern.Clip@,UnityEngine.AudioClip,Cavern.Clip,System.Int32@)">
             <summary>Provides the <paramref name="source"/> a clip from either Cavern or Unity.</summary>
         </member>
         <member name="T:Cavern.Utilities.ColorUtils">
@@ -1072,10 +1139,10 @@
         <member name="M:Cavern.Utilities.VectorUtils.VectorMatch(UnityEngine.Vector3)">
             <summary>Converts a Unity vector to a Cavern vector.</summary>
         </member>
-        <member name="M:Cavern.Utilities.VectorUtils.VectorMatch(Cavern.Utilities.Vector)">
+        <member name="M:Cavern.Utilities.VectorUtils.VectorMatch(System.Numerics.Vector3)">
             <summary>Converts a Cavern vector to a Unity vector.</summary>
         </member>
-        <member name="M:Cavern.Utilities.VectorUtils.VectorCompare(Cavern.Utilities.Vector,UnityEngine.Vector3)">
+        <member name="M:Cavern.Utilities.VectorUtils.VectorCompare(System.Numerics.Vector3,UnityEngine.Vector3)">
             <summary>Checks if a Cavern and Unity vector are equal.</summary>
         </member>
         <member name="T:Cavern.Utilities.WindowBase">

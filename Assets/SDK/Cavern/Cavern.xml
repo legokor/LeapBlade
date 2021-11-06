@@ -4,6 +4,98 @@
         <name>Cavern</name>
     </assembly>
     <members>
+        <member name="T:Cavern.Cavernize.SurroundUpmixer">
+            <summary>Creates 5.1 or 7.1 mixes from any legacy stream by matrix upmixing. Keeps any additional channels.</summary>
+        </member>
+        <member name="F:Cavern.Cavernize.SurroundUpmixer.matrixUpmix">
+            <summary>Creates missing channels from existing ones. Works best if the source is matrix-encoded.
+            Not recommended for Gaming 3D setups.</summary>
+        </member>
+        <member name="F:Cavern.Cavernize.SurroundUpmixer.loop">
+            <summary>Restart the source when finished.</summary>
+        </member>
+        <member name="F:Cavern.Cavernize.SurroundUpmixer.timeSamples">
+            <summary>Playback position in samples.</summary>
+        </member>
+        <member name="T:Cavern.Cavernize.SurroundUpmixer.ChannelData">
+            <summary>Required data for handling a single channel in the upmixing process.</summary>
+        </member>
+        <member name="F:Cavern.Cavernize.SurroundUpmixer.output">
+            <summary>Required data per channel for handling the upmixing process.</summary>
+        </member>
+        <member name="F:Cavern.Cavernize.SurroundUpmixer.cache">
+            <summary>Cached samples from the <see cref="F:Cavern.Cavernize.SurroundUpmixer.source"/> for processing.</summary>
+        </member>
+        <member name="F:Cavern.Cavernize.SurroundUpmixer.source">
+            <summary>Stream to be upmixed.</summary>
+            <remarks>A legacy channel layout found in <see cref="F:Cavern.Remapping.ChannelPrototype.StandardMatrix"/> is required.</remarks>
+        </member>
+        <member name="E:Cavern.Cavernize.SurroundUpmixer.OnPlaybackFinished">
+            <summary>Called when a non-<see cref="F:Cavern.Cavernize.SurroundUpmixer.loop"/>ing <see cref="F:Cavern.Cavernize.SurroundUpmixer.source"/> has generated its last sample blocks.</summary>
+        </member>
+        <member name="M:Cavern.Cavernize.SurroundUpmixer.#ctor(Cavern.Clip)">
+            <summary>Creates 5.1 or 7.1 mixes from any legacy stream by matrix upmixing. Keeps any additional channels.</summary>
+        </member>
+        <member name="M:Cavern.Cavernize.SurroundUpmixer.#ctor(Cavern.Clip,System.Boolean)">
+            <summary>Creates 5.1 or 7.1 mixes from any legacy stream by matrix upmixing. Keeps any additional channels.</summary>
+        </member>
+        <member name="M:Cavern.Cavernize.SurroundUpmixer.GetChannels">
+            <summary>Returns an array of all channels that are required to play this upmixed <see cref="F:Cavern.Cavernize.SurroundUpmixer.source"/>.</summary>
+        </member>
+        <member name="M:Cavern.Cavernize.SurroundUpmixer.GetChannelId(Cavern.Remapping.ReferenceChannel)">
+            <summary>Get the position of <paramref name="channel"/> in <see cref="F:Cavern.Cavernize.SurroundUpmixer.output"/>.</summary>
+        </member>
+        <member name="M:Cavern.Cavernize.SurroundUpmixer.GenerateSamples(System.Int32)">
+            <summary>Generate the next <paramref name="samples"/> samples to be retrieved with
+            <see cref="M:Cavern.Cavernize.SurroundUpmixer.RetrieveSamples(Cavern.Remapping.ReferenceChannel)"/>.</summary>
+        </member>
+        <member name="M:Cavern.Cavernize.SurroundUpmixer.Readable(Cavern.Remapping.ReferenceChannel)">
+            <summary>Returns if the given channel was updated the last time <see cref="M:Cavern.Cavernize.SurroundUpmixer.GenerateSamples(System.Int32)"/> was called.</summary>
+        </member>
+        <member name="M:Cavern.Cavernize.SurroundUpmixer.RetrieveSamples(Cavern.Remapping.ReferenceChannel)">
+            <summary>Retrieve samples generated with <see cref="M:Cavern.Cavernize.SurroundUpmixer.GenerateSamples(System.Int32)"/>.</summary>
+            <remarks>This function doesn't check if a channel contains fresh data or not.
+            Use <see cref="M:Cavern.Cavernize.SurroundUpmixer.Readable(Cavern.Remapping.ReferenceChannel)"/> for this check.</remarks>
+        </member>
+        <member name="T:Cavern.Filters.FastConvolver">
+            <summary>Performs an optimized convolution.</summary>
+            <remarks>This filter adds delay, which is the smallest power of 2 larger than the length of the <see cref="P:Cavern.Filters.FastConvolver.Impulse"/>.</remarks>
+        </member>
+        <member name="P:Cavern.Filters.FastConvolver.Impulse">
+            <summary>Impulse response to convolve with.</summary>
+        </member>
+        <member name="F:Cavern.Filters.FastConvolver.transferFunction">
+            <summary>Padded FFT of <see cref="P:Cavern.Filters.FastConvolver.Impulse"/>.</summary>
+        </member>
+        <member name="F:Cavern.Filters.FastConvolver.cache">
+            <summary>FFT optimization.</summary>
+        </member>
+        <member name="F:Cavern.Filters.FastConvolver.unprocessed">
+            <summary>Cached samples for the next frame.</summary>
+        </member>
+        <member name="F:Cavern.Filters.FastConvolver.processed">
+            <summary>Buffer for samples that can be written to the output.</summary>
+        </member>
+        <member name="F:Cavern.Filters.FastConvolver.position">
+            <summary>Last handled sample in <see cref="F:Cavern.Filters.FastConvolver.unprocessed"/> and <see cref="F:Cavern.Filters.FastConvolver.processed"/>.</summary>
+        </member>
+        <member name="F:Cavern.Filters.FastConvolver.shiftFactor">
+            <summary>FFT size shift. This increases delay, decreases CPU use.</summary>
+        </member>
+        <member name="M:Cavern.Filters.FastConvolver.#ctor(System.Single[])">
+            <summary>Construct a convolver for a target impulse response.</summary>
+        </member>
+        <member name="M:Cavern.Filters.FastConvolver.#ctor(System.Single[],System.Int32)">
+            <summary>Construct a convolver for a target impulse response with increased FFT factor.</summary>
+        </member>
+        <member name="M:Cavern.Filters.FastConvolver.ProcessFrame">
+            <summary>Processes a ready set of the <see cref="F:Cavern.Filters.FastConvolver.unprocessed"/>.</summary>
+            <remarks>Use the <see cref="F:Cavern.Filters.FastConvolver.unprocessed"/> array such as the next samples are in the first half only,
+            the second half should be silent.</remarks>
+        </member>
+        <member name="M:Cavern.Filters.FastConvolver.Process(System.Single[])">
+            <summary>Apply convolution on an array of samples. One filter should be applied to only one continuous stream of samples.</summary>
+        </member>
         <member name="T:Cavern.Remapping.ChannelPrototype">
             <summary>Light audio channel information structure.</summary>
         </member>
@@ -48,16 +140,16 @@
         <member name="F:Cavern.Remapping.ChannelPrototype.ScreenLFE">
             <summary>Possible channels to use in layouts.</summary>
         </member>
-        <member name="F:Cavern.Remapping.ChannelPrototype.SideLeft">
-            <summary>Possible channels to use in layouts.</summary>
-        </member>
-        <member name="F:Cavern.Remapping.ChannelPrototype.SideRight">
-            <summary>Possible channels to use in layouts.</summary>
-        </member>
         <member name="F:Cavern.Remapping.ChannelPrototype.RearLeft">
             <summary>Possible channels to use in layouts.</summary>
         </member>
         <member name="F:Cavern.Remapping.ChannelPrototype.RearRight">
+            <summary>Possible channels to use in layouts.</summary>
+        </member>
+        <member name="F:Cavern.Remapping.ChannelPrototype.SideLeft">
+            <summary>Possible channels to use in layouts.</summary>
+        </member>
+        <member name="F:Cavern.Remapping.ChannelPrototype.SideRight">
             <summary>Possible channels to use in layouts.</summary>
         </member>
         <member name="F:Cavern.Remapping.ChannelPrototype.FrontLeftCenter">
@@ -108,6 +200,9 @@
         <member name="F:Cavern.Remapping.ChannelPrototype.RearCenter">
             <summary>Possible channels to use in layouts.</summary>
         </member>
+        <member name="F:Cavern.Remapping.ChannelPrototype.Mapping">
+            <summary>Converts the <see cref="T:Cavern.Remapping.ReferenceChannel"/> values to a <see cref="T:Cavern.Remapping.ChannelPrototype"/>.</summary>
+        </member>
         <member name="F:Cavern.Remapping.ChannelPrototype.StandardMatrix">
             <summary>Industry standard channel orders for each input channel count.</summary>
             <remarks>Matrices with 8+ channels are DCP orders, with messy standardization, and are unused in commercial applications.
@@ -118,6 +213,10 @@
         </member>
         <member name="M:Cavern.Remapping.ChannelPrototype.ToString">
             <summary>Human-readable channel prototype data.</summary>
+        </member>
+        <member name="T:Cavern.Remapping.ReferenceChannel">
+            <summary>Possible channels in channel-based legacy systems.</summary>
+            <remarks>The standard 7.1 layout is the first 8 entries.</remarks>
         </member>
         <member name="T:Cavern.Remapping.RemappedChannel">
             <summary>Easily editable clip for <see cref="T:Cavern.Remapping.Remapper"/>'s channel spoofing.</summary>
@@ -153,6 +252,9 @@
             <summary>Remap a multichannel audio frame.</summary>
             <param name="stream">Source audio stream</param>
             <param name="channels">Source channel count</param>
+        </member>
+        <member name="M:Cavern.Remapping.Remapper.Dispose">
+            <summary>Remove the created sources from the listener.</summary>
         </member>
         <member name="T:Cavern.Clip">
             <summary>Audio content.</summary>
@@ -228,7 +330,7 @@
             <summary>Rotation around the vertical axis in degrees: elevation.</summary>
         </member>
         <member name="P:Cavern.Channel.Y">
-            <summary>Rotation around the horizontal axis in degrees: azimuth.</summary>
+            <summary>Rotation around the horizontal axis in degrees, clockwise: azimuth.</summary>
         </member>
         <member name="P:Cavern.Channel.LFE">
             <summary>True for channels carrying only Low Frequency Effects.</summary>
@@ -306,11 +408,11 @@
         <member name="F:Cavern.Listener.Rotation">
             <summary>Rotation in Euler angles (degrees).</summary>
         </member>
-        <member name="F:Cavern.Listener.EnvironmentType">
+        <member name="P:Cavern.Listener.EnvironmentType">
             <summary>3D environment type.</summary>
             <remarks>Set by the user and applied when a <see cref="T:Cavern.Listener"/> is created. Don't override without user interaction.</remarks>
         </member>
-        <member name="F:Cavern.Listener.HeadphoneVirtualizer">
+        <member name="P:Cavern.Listener.HeadphoneVirtualizer">
             <summary>Virtual surround effect for headphones. This will replace the active <see cref="P:Cavern.Listener.Channels"/> on the next frame.</summary>
             <remarks>Set by the user and applied when a <see cref="T:Cavern.Listener"/> is created. Don't override without user interaction.</remarks>
         </member>
@@ -402,11 +504,17 @@
         <member name="M:Cavern.Listener.op_Implicit(Cavern.Listener)~System.Boolean">
             <summary>Implicit null check.</summary>
         </member>
-        <member name="F:Cavern.Listener.activeSources">
-            <summary>Attached <see cref="T:Cavern.Source"/>s.</summary>
-        </member>
         <member name="F:Cavern.Listener.defaultSourceLimit">
             <summary>Default value of <see cref="F:Cavern.Listener.sourceLimit"/> and <see cref="P:Cavern.Listener.MaximumSources"/>.</summary>
+        </member>
+        <member name="F:Cavern.Listener.headphoneVirtualizer">
+            <summary>Virtual surround effect for headphones. This will replace the active <see cref="P:Cavern.Listener.Channels"/> on the next frame.</summary>
+        </member>
+        <member name="F:Cavern.Listener.environmentType">
+            <summary>3D environment type.</summary>
+        </member>
+        <member name="F:Cavern.Listener.activeSources">
+            <summary>Attached <see cref="T:Cavern.Source"/>s.</summary>
         </member>
         <member name="F:Cavern.Listener.pulseDelta">
             <summary>Position between the last and current game frame's playback position.</summary>
@@ -438,6 +546,9 @@
         <member name="F:Cavern.Listener.lowpasses">
             <summary>Lowpass filters for each channel.</summary>
         </member>
+        <member name="M:Cavern.Listener.Recalculate">
+            <summary>Recalculate the rendering environment.</summary>
+        </member>
         <member name="M:Cavern.Listener.Reoptimize">
             <summary>Recreate optimization arrays.</summary>
         </member>
@@ -456,11 +567,11 @@
         <member name="F:Cavern.Source.listenerNode">
             <summary>Cached node from <see cref="F:Cavern.Listener.activeSources"/> for faster detach.</summary>
         </member>
-        <member name="F:Cavern.Source.distance">
-            <summary>Distance from the listener.</summary>
-        </member>
         <member name="P:Cavern.Source.PitchedUpdateRate">
             <summary>Samples required to match the listener's update rate after pitch changes.</summary>
+        </member>
+        <member name="F:Cavern.Source.distancer">
+            <summary>Distance simulator for virtualization.</summary>
         </member>
         <member name="F:Cavern.Source.baseUpdateRate">
             <summary><see cref="P:Cavern.Source.PitchedUpdateRate"/> without resampling.</summary>
@@ -468,8 +579,14 @@
         <member name="F:Cavern.Source.calculatedPitch">
             <summary>Actually used pitch multiplier including the Doppler effect.</summary>
         </member>
+        <member name="F:Cavern.Source.distance">
+            <summary>Distance from the listener.</summary>
+        </member>
         <member name="F:Cavern.Source.lastDistance">
             <summary><see cref="F:Cavern.Source.distance"/> in the previous frame, required for Doppler effect calculation.</summary>
+        </member>
+        <member name="F:Cavern.Source.lastDoppler">
+            <summary>Contains smoothed pitch for the doppler effect. Used to mitigate frames where v = 0, because audio FPS > video FPS.</summary>
         </member>
         <member name="F:Cavern.Source.resampleMult">
             <summary>Sample rate multiplier to match the system sample rate.</summary>
@@ -550,11 +667,11 @@
             <summary>x to the power of 16.</summary>
             <returns>x^16 the fastest way possible</returns>
         </member>
-        <member name="M:Cavern.Source.CalculateAngleMatches(System.Int32,Cavern.Utilities.Vector,Cavern.Source.MatchModifierFunc)">
+        <member name="M:Cavern.Source.CalculateAngleMatches(System.Int32,System.Numerics.Vector3,Cavern.Source.MatchModifierFunc)">
             <summary>Angle match calculations.</summary>
         </member>
-        <member name="M:Cavern.Source.LinearizeAngleMatches(System.Int32,Cavern.Utilities.Vector,Cavern.Source.MatchModifierFunc)">
-            <summary>Linearized <see cref="M:Cavern.Source.CalculateAngleMatches(System.Int32,Cavern.Utilities.Vector,Cavern.Source.MatchModifierFunc)"/>:
+        <member name="M:Cavern.Source.LinearizeAngleMatches(System.Int32,System.Numerics.Vector3,Cavern.Source.MatchModifierFunc)">
+            <summary>Linearized <see cref="M:Cavern.Source.CalculateAngleMatches(System.Int32,System.Numerics.Vector3,Cavern.Source.MatchModifierFunc)"/>:
             pi / 2 - pi / 2 * x, angle match: pi - (lin acos) = pi / 2 + pi / 2 * x.</summary>
         </member>
         <member name="F:Cavern.Source.Clip">
@@ -582,7 +699,7 @@
             <summary>Balance between left and right channels.</summary>
         </member>
         <member name="F:Cavern.Source.SpatialBlend">
-            <summary>Balance between 2D and 3D mixing. 0 is 2D and 1 is 3D.</summary>
+            <summary>Balance between 1D and 3D mixing. 0 is 1D and 1 is 3D.</summary>
         </member>
         <member name="F:Cavern.Source.Size">
             <summary>Audio source size relative to <see cref="F:Cavern.Listener.EnvironmentSize"/>. 0 is a point, 1 is the entire room.</summary>
@@ -595,6 +712,9 @@
         </member>
         <member name="F:Cavern.Source.SpatialFilter">
             <summary>Filter to be applied on the 3D mixed output.</summary>
+        </member>
+        <member name="F:Cavern.Source.DistanceSimulation">
+            <summary>Simulates distance, not just direction when using virtualization.</summary>
         </member>
         <member name="F:Cavern.Source.Position">
             <summary>Object position in absolute space.</summary>
@@ -691,7 +811,7 @@
             <param name="posX">Reference position on the X axis</param>
             <param name="channelX">Currently checked channel position on the X axis</param>
         </member>
-        <member name="M:Cavern.Source.AssignHorizontalLayer(System.Int32,System.Int32@,System.Int32@,System.Int32@,System.Int32@,System.Single@,System.Single@,Cavern.Utilities.Vector,Cavern.Utilities.Vector)">
+        <member name="M:Cavern.Source.AssignHorizontalLayer(System.Int32,System.Int32@,System.Int32@,System.Int32@,System.Int32@,System.Single@,System.Single@,System.Numerics.Vector3,System.Numerics.Vector3)">
             <summary>Get the closest channels to a source in each direction.</summary>
             <param name="channel">Checked channel ID</param>
             <param name="frontLeft">Closest front left channel ID</param>
@@ -732,6 +852,15 @@
         <member name="M:Cavern.SpecialSources.InfiniteSource.GetSamples">
             <summary>Get the next samples in the audio stream.</summary>
         </member>
+        <member name="T:Cavern.Utilities.ArrayExtensions">
+            <summary>Extra array handling functions.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.ArrayExtensions.FastClone``1(``0[])">
+            <summary>Clones an array about twice as fast as <see cref="M:System.Array.Clone"/>.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.ArrayExtensions.Has``1(``0[],System.Func{``0,System.Boolean})">
+            <summary>Checks if an array has any values matching a <paramref name="predicate"/>.</summary>
+        </member>
         <member name="T:Cavern.Utilities.CavernAmp">
             <summary>Drastically faster versions of some functions written in C++.</summary>
         </member>
@@ -752,6 +881,42 @@
         </member>
         <member name="M:Cavern.Utilities.CavernAmp.IsAvailable">
             <summary>When the DLL is present near the executable and the platform matches, this returns true.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.CavernAmp.FFTCache_Create(System.Int32)">
+            <summary>FFT cache constructor.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.CavernAmp.FFTCache_Size(System.IntPtr)">
+            <summary>Get the creation size of the FFT cache.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.CavernAmp.FFTCache_Dispose(System.IntPtr)">
+            <summary>Dispose an FFT cache.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.CavernAmp.ProcessFFT(Cavern.Utilities.Complex[],System.Int32,System.IntPtr,System.Int32)">
+            <summary>Actual FFT processing, somewhat in-place.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.CavernAmp.ProcessFFT(System.Single[],System.Int32,System.IntPtr)">
+            <summary>Fourier-transform a signal in 1D. The result is the spectral power.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.CavernAmp.InPlaceFFTCall(Cavern.Utilities.Complex[],System.Int32,System.IntPtr)">
+            <summary>Fast Fourier transform a 2D signal while keeping the source array allocation.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.CavernAmp.InPlaceFFT(Cavern.Utilities.Complex[],Cavern.Utilities.FFTCache)">
+            <summary>Fast Fourier transform a 2D signal while keeping the source array allocation.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.CavernAmp.InPlaceFFTCall(System.Single[],System.Int32,System.IntPtr)">
+            <summary>Spectrum of a signal's FFT while keeping the source array allocation.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.CavernAmp.InPlaceFFT(System.Single[],Cavern.Utilities.FFTCache)">
+            <summary>Spectrum of a signal's FFT while keeping the source array allocation.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.CavernAmp.ProcessIFFT(Cavern.Utilities.Complex[],System.Int32,System.IntPtr,System.Int32)">
+            <summary>Outputs IFFT(X) * N.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.CavernAmp.InPlaceIFFTCall(Cavern.Utilities.Complex[],System.Int32,System.IntPtr)">
+            <summary>Inverse Fast Fourier Transform of a transformed signal, while keeping the source array allocation.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.CavernAmp.InPlaceIFFT(Cavern.Utilities.Complex[],Cavern.Utilities.FFTCache)">
+            <summary>Inverse Fast Fourier Transform of a transformed signal, while keeping the source array allocation.</summary>
         </member>
         <member name="T:Cavern.Utilities.Complex">
             <summary>A complex number.</summary>
@@ -780,6 +945,9 @@
         <member name="M:Cavern.Utilities.Complex.op_Subtraction(Cavern.Utilities.Complex,Cavern.Utilities.Complex)">
             <summary>Complex substraction.</summary>
         </member>
+        <member name="M:Cavern.Utilities.Complex.op_UnaryNegation(Cavern.Utilities.Complex)">
+            <summary>Complex negation.</summary>
+        </member>
         <member name="M:Cavern.Utilities.Complex.op_Multiply(Cavern.Utilities.Complex,Cavern.Utilities.Complex)">
             <summary>Complex multiplication.</summary>
         </member>
@@ -798,6 +966,9 @@
         <member name="M:Cavern.Utilities.Complex.Divide(Cavern.Utilities.Complex@)">
             <summary>Divide with another complex number.</summary>
         </member>
+        <member name="M:Cavern.Utilities.Complex.Invert">
+            <summary>Calculate 1 / z.</summary>
+        </member>
         <member name="M:Cavern.Utilities.Complex.CompareTo(System.Single)">
             <summary>Compare thie number to an <paramref name="other"/> if it precedes, follows, or matches it in a sort.</summary>
         </member>
@@ -813,6 +984,63 @@
         <member name="M:Cavern.Utilities.Complex.ToString">
             <summary>Display the complex number.</summary>
         </member>
+        <member name="T:Cavern.Utilities.FFTCache">
+            <summary>Precalculated constants and preallocated recursion arrays for a given FFT size.</summary>
+            <remarks>Avoid simultaneously calculating two FFTs (since the split arrays are shared), unless you use <see cref="T:Cavern.Utilities.ThreadSafeFFTCache"/>.
+            </remarks>
+        </member>
+        <member name="F:Cavern.Utilities.FFTCache.cos">
+            <summary>Cosines.</summary>
+        </member>
+        <member name="F:Cavern.Utilities.FFTCache.sin">
+            <summary>Sines.</summary>
+        </member>
+        <member name="P:Cavern.Utilities.FFTCache.Even">
+            <summary>Preallocated even split arrays. Globally cached in single-threaded applications.</summary>
+        </member>
+        <member name="P:Cavern.Utilities.FFTCache.Odd">
+            <summary>Preallocated odd split arrays. Globally cached in single-threaded applications.</summary>
+        </member>
+        <member name="F:Cavern.Utilities.FFTCache.globalEven">
+            <summary>Preallocated recursion arrays. Shared between all caches, their sizes are 2^i.</summary>
+        </member>
+        <member name="F:Cavern.Utilities.FFTCache.globalOdd">
+            <summary>Preallocated recursion arrays. Shared between all caches, their sizes are 2^i.</summary>
+        </member>
+        <member name="P:Cavern.Utilities.FFTCache.Native">
+            <summary>C++ FFT cache class memory address to be passed to <see cref="T:Cavern.Utilities.CavernAmp"/>.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.FFTCache.#ctor(System.Int32)">
+            <summary>FFT cache constructor.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.FFTCache.Dispose">
+            <summary>Free all used resources if there is any.</summary>
+        </member>
+        <member name="T:Cavern.Utilities.ThreadSafeFFTCache">
+            <summary>Thread-safe version of <see cref="T:Cavern.Utilities.FFTCache"/>. Uses its own split cache arrays. Use one instance per thread.</summary>
+            <remarks>With <see cref="T:Cavern.Utilities.CavernAmp"/>, all <see cref="T:Cavern.Utilities.FFTCache"/>s are thread-safe.</remarks>
+        </member>
+        <member name="P:Cavern.Utilities.ThreadSafeFFTCache.Even">
+            <summary>Preallocated even split arrays.</summary>
+        </member>
+        <member name="P:Cavern.Utilities.ThreadSafeFFTCache.Odd">
+            <summary>Preallocated odd split arrays.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.ThreadSafeFFTCache.#ctor(System.Int32)">
+            <summary>Thread-safe <see cref="T:Cavern.Utilities.FFTCache"/> constructor. Does not reference shared split arrays.</summary>
+        </member>
+        <member name="T:Cavern.Utilities.Linked">
+            <summary>Marks a relationship between two arrays that are not merged in a struct for better performance.</summary>
+        </member>
+        <member name="F:Cavern.Utilities.Linked.targetField">
+            <summary>The other field linked with this field.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.Linked.#ctor(System.String)">
+            <summary>Marks a relationship between two arrays that are not merged in a struct for better performance.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.Linked.IsValid(System.Object)">
+            <summary>Checks if a linking is valid in an object.</summary>
+        </member>
         <member name="T:Cavern.Utilities.ListExtensions">
             <summary>Extra list handling functions.</summary>
         </member>
@@ -825,8 +1053,84 @@
         <member name="M:Cavern.Utilities.ListExtensions.RemoveSorted``1(System.Collections.Generic.List{``0},``0)">
             <summary>Remove an item from a sorted <see cref="T:System.Collections.Generic.List`1"/>.</summary>
         </member>
+        <member name="T:Cavern.Utilities.Measurements">
+            <summary>Tools for measuring frequency response.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.Measurements.ProcessFFT(Cavern.Utilities.Complex[],Cavern.Utilities.FFTCache,System.Int32)">
+            <summary>Actual FFT processing, somewhat in-place.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.Measurements.ProcessFFT(System.Single[],Cavern.Utilities.FFTCache)">
+            <summary>Fourier-transform a signal in 1D. The result is the spectral power.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.Measurements.FFT(Cavern.Utilities.Complex[],Cavern.Utilities.FFTCache)">
+            <summary>Fast Fourier transform a 2D signal.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.Measurements.FFT(System.Single[],Cavern.Utilities.FFTCache)">
+            <summary>Fast Fourier transform a 1D signal.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.Measurements.InPlaceFFT(Cavern.Utilities.Complex[],Cavern.Utilities.FFTCache)">
+            <summary>Fast Fourier transform a 2D signal while keeping the source array allocation.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.Measurements.FFT1D(System.Single[],Cavern.Utilities.FFTCache)">
+            <summary>Spectrum of a signal's FFT.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.Measurements.InPlaceFFT(System.Single[],Cavern.Utilities.FFTCache)">
+            <summary>Spectrum of a signal's FFT while keeping the source array allocation.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.Measurements.ProcessIFFT(Cavern.Utilities.Complex[],Cavern.Utilities.FFTCache,System.Int32)">
+            <summary>Outputs IFFT(X) * N.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.Measurements.IFFT(Cavern.Utilities.Complex[],Cavern.Utilities.FFTCache)">
+            <summary>Inverse Fast Fourier Transform of a transformed signal.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.Measurements.InPlaceIFFT(Cavern.Utilities.Complex[],Cavern.Utilities.FFTCache)">
+            <summary>Inverse Fast Fourier Transform of a transformed signal, while keeping the source array allocation.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.Measurements.MinimumPhaseSpectrum(Cavern.Utilities.Complex[],Cavern.Utilities.FFTCache)">
+            <summary>Minimizes the phase of a spectrum.</summary>
+            <remarks>This function does not handle zeros in the spectrum. Make sure there is a threshold before using this function.</remarks>
+        </member>
+        <member name="M:Cavern.Utilities.Measurements.OffbandGain(Cavern.Utilities.Complex[],System.Double,System.Double,System.Double,System.Double)">
+            <summary>Add gain to every frequency except a given band.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.Measurements.GetRealPart(Cavern.Utilities.Complex[])">
+            <summary>Get the real part of a signal's FFT.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.Measurements.GetRealPartHalf(Cavern.Utilities.Complex[])">
+            <summary>Get half of the real part of a signal's FFT.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.Measurements.GetImaginaryPart(Cavern.Utilities.Complex[])">
+            <summary>Get the imaginary part of a signal's FFT.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.Measurements.GetSpectrum(Cavern.Utilities.Complex[])">
+            <summary>Get the gains of frequencies in a signal after FFT.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.Measurements.GetPhase(Cavern.Utilities.Complex[])">
+            <summary>Get the gains of frequencies in a signal after FFT.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.Measurements.GetFrequencyResponse(Cavern.Utilities.Complex[],Cavern.Utilities.Complex[])">
+            <summary>Get the frequency response using the original sweep signal's FFT as reference.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.Measurements.GetFrequencyResponse(Cavern.Utilities.Complex[],System.Single[],Cavern.Utilities.FFTCache)">
+            <summary>Get the frequency response using the original sweep signal's FFT as reference.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.Measurements.GetFrequencyResponse(System.Single[],System.Single[],Cavern.Utilities.FFTCache)">
+            <summary>Get the frequency response using the original sweep signal as reference.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.Measurements.GetImpulseResponse(Cavern.Utilities.Complex[],Cavern.Utilities.FFTCache)">
+            <summary>Get the complex impulse response using a precalculated frequency response.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.Measurements.GetImpulseResponse(System.Single[],System.Single[],Cavern.Utilities.FFTCache)">
+            <summary>Get the complex impulse response using the original sweep signal as a reference.</summary>
+        </member>
         <member name="T:Cavern.Utilities.QMath">
             <summary>Two plus two is four, minus one, that's three, quick maths.</summary>
+        </member>
+        <member name="T:Cavern.Utilities.QMath.ConverterStruct">
+            <summary>Hack for <see cref="M:Cavern.Utilities.QMath.Log2(System.Int32)"/> to use in-CPU float conversion as log2 by shifting the exponent.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.QMath.Base2Ceil(System.Int32)">
+            <summary>Round up the number in base 2.</summary>
         </member>
         <member name="M:Cavern.Utilities.QMath.Clamp(System.Double,System.Double,System.Double)">
             <summary>Clamp a double between limits.</summary>
@@ -837,10 +1141,16 @@
         <member name="M:Cavern.Utilities.QMath.Clamp(System.Int32,System.Int32,System.Int32)">
             <summary>Clamp an int between limits.</summary>
         </member>
+        <member name="M:Cavern.Utilities.QMath.GainToDb(System.Single)">
+            <summary>Convert voltage gain to decibels.</summary>
+        </member>
         <member name="M:Cavern.Utilities.QMath.Lerp(System.Single,System.Single,System.Single)">
             <summary>Unclamped linear interpolation.</summary>
         </member>
         <member name="M:Cavern.Utilities.QMath.Lerp(System.Double,System.Double,System.Double)">
+            <summary>Unclamped linear interpolation.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.QMath.Lerp(System.Numerics.Vector2,System.Numerics.Vector2,System.Single)">
             <summary>Unclamped linear interpolation.</summary>
         </member>
         <member name="M:Cavern.Utilities.QMath.LerpInverse(System.Single,System.Single,System.Single)">
@@ -851,6 +1161,10 @@
         </member>
         <member name="M:Cavern.Utilities.QMath.Log2(System.Int32)">
             <summary>Compute the base 2 logarithm of a number faster than a generic Log function.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.QMath.SignCompare(System.Single,System.Single)">
+            <summary>Checks if the two numbers have the same sign.</summary>
+            <remarks>This function does not handle 0, 0 correctly for optimization purposes.</remarks>
         </member>
         <member name="M:Cavern.Utilities.QMath.Sum(System.Single[])">
             <summary>Sum all elements in an array.</summary>
@@ -894,86 +1208,35 @@
             <param name="to">New sample count</param>
             <returns>Returns a resampled version of the given array</returns>
         </member>
-        <member name="T:Cavern.Utilities.Vector">
-            <summary>Three-dimensional vector.</summary>
+        <member name="T:Cavern.Utilities.VectorExtensions">
+            <summary>Extra vector calculations.</summary>
         </member>
-        <member name="F:Cavern.Utilities.Vector.Deg2Rad">
+        <member name="F:Cavern.Utilities.VectorExtensions.Deg2Rad">
             <summary>Converts degrees to radians. = pi / 180.</summary>
         </member>
-        <member name="F:Cavern.Utilities.Vector.Sqrt2p2">
+        <member name="F:Cavern.Utilities.VectorExtensions.Rad2Deg">
+            <summary>Converts radians to degrees. = 180 / pi.</summary>
+        </member>
+        <member name="F:Cavern.Utilities.VectorExtensions.Sqrt2p2">
             <summary>sqrt(2) / 2 = 1 / sqrt(2)</summary>
         </member>
-        <member name="F:Cavern.Utilities.Vector.x">
-            <summary>First coordinate of the vector.</summary>
+        <member name="M:Cavern.Utilities.VectorExtensions.MapToCube(System.Numerics.Vector3)">
+            <summary>Returns a vector that's the same direction as the source vector, but it's on the side of a 2x2x2 cube.</summary>
         </member>
-        <member name="F:Cavern.Utilities.Vector.y">
-            <summary>Second coordinate of the vector.</summary>
+        <member name="M:Cavern.Utilities.VectorExtensions.Normalized(System.Numerics.Vector3)">
+            <summary>Returns a vector that's the same direction as the source vector, but has a length of 1.</summary>
         </member>
-        <member name="F:Cavern.Utilities.Vector.z">
-            <summary>Third coordinate of the vector.</summary>
-        </member>
-        <member name="P:Cavern.Utilities.Vector.Magnitude">
-            <summary>Length of the vector.</summary>
-        </member>
-        <member name="M:Cavern.Utilities.Vector.#ctor(System.Single,System.Single)">
-            <summary>Three-dimensional vector with a zero z coordinate.</summary>
-        </member>
-        <member name="M:Cavern.Utilities.Vector.#ctor(System.Single,System.Single,System.Single)">
-            <summary>Three-dimensional vector.</summary>
-        </member>
-        <member name="M:Cavern.Utilities.Vector.RotateX(System.Single)">
-            <summary>Rotate this vector by the vertical axis.</summary>
-        </member>
-        <member name="M:Cavern.Utilities.Vector.RotateY(System.Single)">
-            <summary>Rotate this vector by the horizontal axis.</summary>
-        </member>
-        <member name="M:Cavern.Utilities.Vector.RotateZ(System.Single)">
-            <summary>Rotate this vector by the Z axis.</summary>
-        </member>
-        <member name="M:Cavern.Utilities.Vector.RotateXY(System.Single,System.Single)">
-            <summary>Rotate this vector by the X and Y axes.</summary>
-        </member>
-        <member name="M:Cavern.Utilities.Vector.Rotate(System.Single,System.Single,System.Single)">
-            <summary>Rotate this vector by all axes.</summary>
-        </member>
-        <member name="M:Cavern.Utilities.Vector.Rotate(Cavern.Utilities.Vector)">
-            <summary>Rotate this vector by all axes.</summary>
-        </member>
-        <member name="M:Cavern.Utilities.Vector.RotateInverse(Cavern.Utilities.Vector)">
-            <summary>Rotate this vector by all axes in the opposite direction.</summary>
-        </member>
-        <member name="M:Cavern.Utilities.Vector.Distance(Cavern.Utilities.Vector)">
-            <summary>Get the distance from another vector's position.</summary>
-        </member>
-        <member name="M:Cavern.Utilities.Vector.Scale(Cavern.Utilities.Vector)">
-            <summary>Multiply this vector with another one by each dimension.</summary>
-        </member>
-        <member name="M:Cavern.Utilities.Vector.Downscale(Cavern.Utilities.Vector)">
-            <summary>Divide this vector with another one by each dimension.</summary>
-        </member>
-        <member name="M:Cavern.Utilities.Vector.Dot(Cavern.Utilities.Vector)">
-            <summary>Calculate the dot product with another vector.</summary>
-        </member>
-        <member name="M:Cavern.Utilities.Vector.Normalize">
-            <summary>Normalize this vector.</summary>
-        </member>
-        <member name="M:Cavern.Utilities.Vector.op_Addition(Cavern.Utilities.Vector,Cavern.Utilities.Vector)">
-            <summary>Vector addition.</summary>
-        </member>
-        <member name="M:Cavern.Utilities.Vector.op_Subtraction(Cavern.Utilities.Vector,Cavern.Utilities.Vector)">
-            <summary>Vector substraction.</summary>
-        </member>
-        <member name="M:Cavern.Utilities.Vector.op_Multiply(Cavern.Utilities.Vector,System.Single)">
-            <summary>Scalar multiplication.</summary>
-        </member>
-        <member name="M:Cavern.Utilities.Vector.PlaceInSphere(Cavern.Utilities.Vector)">
-            <summary>For given angles (in degrees) it returns a vector for that position on a sphere with the radius of 1.</summary>
-        </member>
-        <member name="M:Cavern.Utilities.Vector.PlaceInCube(Cavern.Utilities.Vector)">
+        <member name="M:Cavern.Utilities.VectorExtensions.PlaceInCube(System.Numerics.Vector3)">
             <summary>For given angles (in degrees) it returns a vector for that position on a cube with the side length of 2.</summary>
         </member>
-        <member name="M:Cavern.Utilities.Vector.Equals(Cavern.Utilities.Vector)">
-            <summary>Check if two channels are the same.</summary>
+        <member name="M:Cavern.Utilities.VectorExtensions.PlaceInSphere(System.Numerics.Vector3)">
+            <summary>For given angles (in degrees) it returns a vector for that position on a sphere with the radius of 1.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.VectorExtensions.RotateInverse(System.Numerics.Vector3,System.Numerics.Vector3)">
+            <summary>Rotate this vector by all axes in the opposite direction.</summary>
+        </member>
+        <member name="M:Cavern.Utilities.VectorExtensions.WarpToCube(System.Numerics.Vector3)">
+            <summary>Warps the points of a sphere to points a cube.</summary>
         </member>
         <member name="T:Cavern.Utilities.WaveformUtils">
             <summary>Sound processing functions.</summary>
@@ -1032,10 +1295,21 @@
             <param name="to">Range end sample (exclusive)</param>
             <returns>Peak amplitude with its sign in the given range</returns>
         </member>
+        <member name="M:Cavern.Utilities.WaveformUtils.GetRMS(System.Single[])">
+            <summary>Get the root mean square amplitude of a single-channel signal.</summary>
+            <param name="target">Array reference</param>
+            <returns>RMS amplitude of the signal</returns>
+        </member>
         <member name="M:Cavern.Utilities.WaveformUtils.Mix(System.Single[],System.Single[])">
             <summary>Mix a track to a stream.</summary>
-            <param name="from">Track</param>
-            <param name="to">Stream</param>
+            <param name="source">Source track</param>
+            <param name="destination">Destination stream</param>
+        </member>
+        <member name="M:Cavern.Utilities.WaveformUtils.Mix(System.Single[],System.Single[],System.Single)">
+            <summary>Mix a track to a stream with a given gain.</summary>
+            <param name="source">Source track</param>
+            <param name="destination">Destination stream</param>
+            <param name="gain">Linear amplification of the <paramref name="source"/> track</param>
         </member>
         <member name="M:Cavern.Utilities.WaveformUtils.Normalize(System.Single[]@,System.Single,System.Single@,System.Boolean)">
             <summary>Normalize an array of samples.</summary>
@@ -1148,14 +1422,54 @@
             <b>Asymmetric engine</b>: directional.
             </summary>
         </member>
+        <member name="T:Cavern.Virtualizer.Distancer">
+            <summary>Handles distancing calculations for a single source's two ears.</summary>
+        </member>
+        <member name="F:Cavern.Virtualizer.Distancer.distanceFactor">
+            <summary>Decreases real distances by this factor to shrink the environment's scale.</summary>
+        </member>
+        <member name="P:Cavern.Virtualizer.Distancer.LeftGain">
+            <summary>The left ear's gain that corresponds to the <see cref="F:Cavern.Virtualizer.Distancer.source"/>'s distance.</summary>
+        </member>
+        <member name="P:Cavern.Virtualizer.Distancer.RightGain">
+            <summary>The left ear's gain that corresponds to the <see cref="F:Cavern.Virtualizer.Distancer.source"/>'s distance.</summary>
+        </member>
+        <member name="F:Cavern.Virtualizer.Distancer.source">
+            <summary>The filtered source.</summary>
+        </member>
+        <member name="F:Cavern.Virtualizer.Distancer.filter">
+            <summary>The filter processing the <see cref="F:Cavern.Virtualizer.Distancer.source"/>.</summary>
+        </member>
+        <member name="F:Cavern.Virtualizer.Distancer.filterSize">
+            <summary>The maximum length of any of the <see cref="F:Cavern.Virtualizer.Distancer.impulses"/>, because if the <see cref="T:Cavern.Filters.FastConvolver"/> is used, the arrays won't be
+            reassigned and the filter won't cut out, and if the <see cref="T:Cavern.Filters.SpikeConvolver"/> is used, the overhead is basically zero.</summary>
+        </member>
+        <member name="M:Cavern.Virtualizer.Distancer.#ctor(Cavern.Source)">
+            <summary>Create a distance simulation for a <see cref="T:Cavern.Source"/>.</summary>
+        </member>
+        <member name="M:Cavern.Virtualizer.Distancer.Generate(System.Boolean,System.Single[])">
+            <summary>Generate the left/right ear filters.</summary>
+            <param name="right">The object is to the right of the <see cref="T:Cavern.Listener"/>'s forward vector</param>
+            <param name="samples">Single-channel downmixed samples to process</param>
+        </member>
+        <member name="F:Cavern.Virtualizer.Distancer.angles">
+            <summary>All the angles that have their own impulse responses.</summary>
+        </member>
+        <member name="F:Cavern.Virtualizer.Distancer.distances">
+            <summary>All the distances that have their own impulse responses for each angle in meters.</summary>
+        </member>
+        <member name="F:Cavern.Virtualizer.Distancer.impulses">
+            <summary>Ear canal distortion impulse responses for given angles and distances. The first dimension is the angle,
+            provided in <see cref="F:Cavern.Virtualizer.Distancer.angles"/>, and the second dimension is the distance, provided in <see cref="F:Cavern.Virtualizer.Distancer.distances"/>.</summary>
+        </member>
         <member name="T:Cavern.Virtualizer.VirtualizerFilter">
             <summary>Convolution filters for each ear and virtual channel to simulate a spatial environment.</summary>
         </member>
         <member name="T:Cavern.Virtualizer.VirtualizerFilter.SpatialChannel">
             <summary>Represents a virtualizable channel with impulse responses for both ears.</summary>
         </member>
-        <member name="F:Cavern.Virtualizer.VirtualizerFilter.SpatialChannel.peakDelay">
-            <summary>Ear to ear sound travel time in samples.</summary>
+        <member name="F:Cavern.Virtualizer.VirtualizerFilter.SpatialChannel.crossoverFrequency">
+            <summary>Low frequency crossover, sounds not to be spatialized.</summary>
         </member>
         <member name="F:Cavern.Virtualizer.VirtualizerFilter.SpatialChannel.X">
             <summary>Virtual speaker angle difference from the subject's gaze on the vertical axis: elevation.</summary>
@@ -1169,11 +1483,15 @@
         <member name="F:Cavern.Virtualizer.VirtualizerFilter.SpatialChannel.RightEarIR">
             <summary>Impulse response in the right ear.</summary>
         </member>
-        <member name="P:Cavern.Virtualizer.VirtualizerFilter.SpatialChannel.LowCrossover">
-            <summary>Low frequency crossover filter for retaining bass outside the impulse response frequency range.</summary>
+        <member name="M:Cavern.Virtualizer.VirtualizerFilter.SpatialChannel.GetDelay(System.Single)">
+            <summary>Get the secondary ear's delay by angle of attack.</summary>
+            <remarks>This formula is based on measurements and the sine wave's usability was disproven.</remarks>
         </member>
-        <member name="P:Cavern.Virtualizer.VirtualizerFilter.SpatialChannel.HighCrossover">
-            <summary>High frequency crossover filter for retaining treble outside the impulse response frequency range.</summary>
+        <member name="P:Cavern.Virtualizer.VirtualizerFilter.SpatialChannel.Crossover">
+            <summary>Low frequency crossover filter for retaining bass outside the usable impulse response frequency range.</summary>
+        </member>
+        <member name="F:Cavern.Virtualizer.VirtualizerFilter.referenceDistance">
+            <summary>Reference impulses were measured at this distance, meters.</summary>
         </member>
         <member name="F:Cavern.Virtualizer.VirtualizerFilter.spatialChannels">
             <summary>HRIR database.</summary>

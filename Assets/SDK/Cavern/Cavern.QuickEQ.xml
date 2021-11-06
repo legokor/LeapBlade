@@ -385,6 +385,9 @@
             <param name="targetGain">Target EQ level</param>
             <param name="maxGain">Maximum gain of any generated band</param>
         </member>
+        <member name="M:Cavern.QuickEQ.Equalization.EQGenerator.FlattenSpectrum(Cavern.Utilities.Complex[],System.Int32)">
+            <summary>Create an EQ that completely linearizes the <paramref name="spectrum"/>.</summary>
+        </member>
         <member name="M:Cavern.QuickEQ.Equalization.EQGenerator.GetConvolution(Cavern.QuickEQ.Equalization.Equalizer,System.Int32,System.Int32,System.Single,Cavern.Utilities.Complex[])">
             <summary>Gets a zero-delay convolution filter with minimally sacrificed phase that results in this EQ when applied.</summary>
             <param name="eq">Source <see cref="T:Cavern.QuickEQ.Equalization.Equalizer"/></param>
@@ -429,7 +432,7 @@
             <summary>Minimum filter gain in dB.</summary>
         </member>
         <member name="P:Cavern.QuickEQ.Equalization.PeakingEqualizer.GainPrecision">
-            <summary>Round the gain of each filter to this precision..</summary>
+            <summary>Round the gain of each filter to this precision.</summary>
         </member>
         <member name="P:Cavern.QuickEQ.Equalization.PeakingEqualizer.StartQ">
             <summary>Q at the first try.</summary>
@@ -448,10 +451,12 @@
             <summary>Find the filter with the best Q for the given frequency and gain in <paramref name="target"/>.
             Correct <paramref name="target"/> to the frequency response with the inverse of the found filter.</summary>
         </member>
-        <member name="M:Cavern.QuickEQ.Equalization.PeakingEqualizer.BruteForceBand(System.Single[]@,Cavern.QuickEQ.FilterAnalyzer)">
-            <summary>Finds a <see cref="T:Cavern.Filters.PeakingEQ"/> to correct the worst problem on the input spectrum</summary>
+        <member name="M:Cavern.QuickEQ.Equalization.PeakingEqualizer.BruteForceBand(System.Single[]@,Cavern.QuickEQ.FilterAnalyzer,System.Int32,System.Int32)">
+            <summary>Finds a <see cref="T:Cavern.Filters.PeakingEQ"/> to correct the worst problem on the input spectrum.</summary>
             <param name="target">Logarithmic input spectrum from 20 to sample rate/2 Hz</param>
             <param name="analyzer">A filter analyzer with cached variables that shoudn't be computed again</param>
+            <param name="startPos">First band to analyze</param>
+            <param name="stopPos">Last band to analyze</param>
             <remarks><paramref name="target"/> will be corrected to the frequency response with the found filter</remarks>
         </member>
         <member name="M:Cavern.QuickEQ.Equalization.PeakingEqualizer.GetPeakingEQ(System.Int32,System.Int32)">
@@ -556,7 +561,7 @@
             <summary>Maximum filter amplification.</summary>
         </member>
         <member name="P:Cavern.QuickEQ.FilterAnalyzer.Cache">
-            <summary><see cref="T:Cavern.QuickEQ.FFTCache"/> used for <see cref="P:Cavern.QuickEQ.FilterAnalyzer.FrequencyResponse"/>.</summary>
+            <summary><see cref="T:Cavern.Utilities.FFTCache"/> used for <see cref="P:Cavern.QuickEQ.FilterAnalyzer.FrequencyResponse"/>.</summary>
         </member>
         <member name="P:Cavern.QuickEQ.FilterAnalyzer.ImpulseReference">
             <summary>Swept sine used for frequency and impulse response measurements.</summary>
@@ -621,76 +626,6 @@
         <member name="M:Cavern.QuickEQ.FilterAnalyzer.Dispose">
             <summary>Free the resources used by this analyzer.</summary>
         </member>
-        <member name="T:Cavern.QuickEQ.Measurements">
-            <summary>Tools for measuring frequency response.</summary>
-        </member>
-        <member name="M:Cavern.QuickEQ.Measurements.ProcessFFT(Cavern.Utilities.Complex[],Cavern.QuickEQ.FFTCache,System.Int32)">
-            <summary>Actual FFT processing, somewhat in-place.</summary>
-        </member>
-        <member name="M:Cavern.QuickEQ.Measurements.ProcessFFT(System.Single[],Cavern.QuickEQ.FFTCache)">
-            <summary>Fourier-transform a signal in 1D. The result is the spectral power.</summary>
-        </member>
-        <member name="M:Cavern.QuickEQ.Measurements.FFT(Cavern.Utilities.Complex[],Cavern.QuickEQ.FFTCache)">
-            <summary>Fast Fourier transform a 2D signal.</summary>
-        </member>
-        <member name="M:Cavern.QuickEQ.Measurements.FFT(System.Single[],Cavern.QuickEQ.FFTCache)">
-            <summary>Fast Fourier transform a 1D signal.</summary>
-        </member>
-        <member name="M:Cavern.QuickEQ.Measurements.InPlaceFFT(Cavern.Utilities.Complex[],Cavern.QuickEQ.FFTCache)">
-            <summary>Fast Fourier transform a 2D signal while keeping the source array allocation.</summary>
-        </member>
-        <member name="M:Cavern.QuickEQ.Measurements.FFT1D(System.Single[],Cavern.QuickEQ.FFTCache)">
-            <summary>Spectrum of a signal's FFT.</summary>
-        </member>
-        <member name="M:Cavern.QuickEQ.Measurements.InPlaceFFT(System.Single[],Cavern.QuickEQ.FFTCache)">
-            <summary>Spectrum of a signal's FFT while keeping the source array allocation.</summary>
-        </member>
-        <member name="M:Cavern.QuickEQ.Measurements.ProcessIFFT(Cavern.Utilities.Complex[],Cavern.QuickEQ.FFTCache,System.Int32)">
-            <summary>Outputs IFFT(X) * N.</summary>
-        </member>
-        <member name="M:Cavern.QuickEQ.Measurements.IFFT(Cavern.Utilities.Complex[],Cavern.QuickEQ.FFTCache)">
-            <summary>Inverse Fast Fourier Transform of a transformed signal.</summary>
-        </member>
-        <member name="M:Cavern.QuickEQ.Measurements.InPlaceIFFT(Cavern.Utilities.Complex[],Cavern.QuickEQ.FFTCache)">
-            <summary>Inverse Fast Fourier Transform of a transformed signal, while keeping the source array allocation.</summary>
-        </member>
-        <member name="M:Cavern.QuickEQ.Measurements.MinimumPhaseSpectrum(Cavern.Utilities.Complex[],Cavern.QuickEQ.FFTCache)">
-            <summary>Minimizes the phase of a spectrum.</summary>
-            <remarks>This function does not handle zeros in the spectrum. Make sure there is a threshold before using this function.</remarks>
-        </member>
-        <member name="M:Cavern.QuickEQ.Measurements.OffbandGain(Cavern.Utilities.Complex[],System.Double,System.Double,System.Double,System.Double)">
-            <summary>Add gain to every frequency except a given band.</summary>
-        </member>
-        <member name="M:Cavern.QuickEQ.Measurements.GetRealPart(Cavern.Utilities.Complex[])">
-            <summary>Get the real part of a signal's FFT.</summary>
-        </member>
-        <member name="M:Cavern.QuickEQ.Measurements.GetRealPartHalf(Cavern.Utilities.Complex[])">
-            <summary>Get half of the real part of a signal's FFT.</summary>
-        </member>
-        <member name="M:Cavern.QuickEQ.Measurements.GetImaginaryPart(Cavern.Utilities.Complex[])">
-            <summary>Get the imaginary part of a signal's FFT.</summary>
-        </member>
-        <member name="M:Cavern.QuickEQ.Measurements.GetSpectrum(Cavern.Utilities.Complex[])">
-            <summary>Get the gains of frequencies in a signal after FFT.</summary>
-        </member>
-        <member name="M:Cavern.QuickEQ.Measurements.GetPhase(Cavern.Utilities.Complex[])">
-            <summary>Get the gains of frequencies in a signal after FFT.</summary>
-        </member>
-        <member name="M:Cavern.QuickEQ.Measurements.GetFrequencyResponse(Cavern.Utilities.Complex[],Cavern.Utilities.Complex[])">
-            <summary>Get the frequency response using the original sweep signal's FFT as reference.</summary>
-        </member>
-        <member name="M:Cavern.QuickEQ.Measurements.GetFrequencyResponse(Cavern.Utilities.Complex[],System.Single[],Cavern.QuickEQ.FFTCache)">
-            <summary>Get the frequency response using the original sweep signal's FFT as reference.</summary>
-        </member>
-        <member name="M:Cavern.QuickEQ.Measurements.GetFrequencyResponse(System.Single[],System.Single[],Cavern.QuickEQ.FFTCache)">
-            <summary>Get the frequency response using the original sweep signal as reference.</summary>
-        </member>
-        <member name="M:Cavern.QuickEQ.Measurements.GetImpulseResponse(Cavern.Utilities.Complex[],Cavern.QuickEQ.FFTCache)">
-            <summary>Get the complex impulse response using a precalculated frequency response.</summary>
-        </member>
-        <member name="M:Cavern.QuickEQ.Measurements.GetImpulseResponse(System.Single[],System.Single[],Cavern.QuickEQ.FFTCache)">
-            <summary>Get the complex impulse response using the original sweep signal as a reference.</summary>
-        </member>
         <member name="T:Cavern.QuickEQ.SignalGeneration.NoiseGenerator">
             <summary>Generates noise for a single channel.</summary>
         </member>
@@ -726,51 +661,6 @@
         </member>
         <member name="M:Cavern.QuickEQ.SignalGeneration.SweepGenerator.Frame(System.Single[])">
             <summary>Add silence to the beginning and the end of a sweep for a larger response window.</summary>
-        </member>
-        <member name="T:Cavern.QuickEQ.FFTCache">
-            <summary>Precalculated constants and preallocated recursion arrays for a given FFT size.</summary>
-            <remarks>Avoid simultaneously calculating two FFTs (since the split arrays are shared), unless you use <see cref="T:Cavern.QuickEQ.ThreadSafeFFTCache"/>.
-            </remarks>
-        </member>
-        <member name="F:Cavern.QuickEQ.FFTCache.cos">
-            <summary>Cosines.</summary>
-        </member>
-        <member name="F:Cavern.QuickEQ.FFTCache.sin">
-            <summary>Sines.</summary>
-        </member>
-        <member name="P:Cavern.QuickEQ.FFTCache.Even">
-            <summary>Preallocated even split arrays. Globally cached in single-threaded applications.</summary>
-        </member>
-        <member name="P:Cavern.QuickEQ.FFTCache.Odd">
-            <summary>Preallocated odd split arrays. Globally cached in single-threaded applications.</summary>
-        </member>
-        <member name="F:Cavern.QuickEQ.FFTCache.globalEven">
-            <summary>Preallocated recursion arrays. Shared between all caches, their sizes are 2^i.</summary>
-        </member>
-        <member name="F:Cavern.QuickEQ.FFTCache.globalOdd">
-            <summary>Preallocated recursion arrays. Shared between all caches, their sizes are 2^i.</summary>
-        </member>
-        <member name="P:Cavern.QuickEQ.FFTCache.Native">
-            <summary>C++ FFT cache class memory address to be passed to <see cref="T:Cavern.QuickEQ.Utilities.CavernQuickEQAmp"/>.</summary>
-        </member>
-        <member name="M:Cavern.QuickEQ.FFTCache.#ctor(System.Int32)">
-            <summary>FFT cache constructor.</summary>
-        </member>
-        <member name="M:Cavern.QuickEQ.FFTCache.Dispose">
-            <summary>Free all used resources if there is any.</summary>
-        </member>
-        <member name="T:Cavern.QuickEQ.ThreadSafeFFTCache">
-            <summary>Thread-safe version of <see cref="T:Cavern.QuickEQ.FFTCache"/>. Uses its own split cache arrays. Use one instance per thread.</summary>
-            <remarks>With <see cref="T:Cavern.Utilities.CavernAmp"/>, all <see cref="T:Cavern.QuickEQ.FFTCache"/>s are thread-safe.</remarks>
-        </member>
-        <member name="P:Cavern.QuickEQ.ThreadSafeFFTCache.Even">
-            <summary>Preallocated even split arrays.</summary>
-        </member>
-        <member name="P:Cavern.QuickEQ.ThreadSafeFFTCache.Odd">
-            <summary>Preallocated odd split arrays.</summary>
-        </member>
-        <member name="M:Cavern.QuickEQ.ThreadSafeFFTCache.#ctor(System.Int32)">
-            <summary>Thread-safe <see cref="T:Cavern.QuickEQ.FFTCache"/> constructor. Does not reference shared split arrays.</summary>
         </member>
         <member name="T:Cavern.QuickEQ.GraphUtils">
             <summary>Functions for graph processing and iterations.</summary>
@@ -827,45 +717,30 @@
             <summary>Apply variable smoothing (in octaves) on a graph drawn with <see cref="M:Cavern.QuickEQ.GraphUtils.ConvertToGraph(System.Single[],System.Double,System.Double,System.Int32,System.Int32)"/>.
             </summary>
         </member>
+        <member name="T:Cavern.QuickEQ.Utilities.CavernAmpPeakingEQ">
+            <summary>The format of PEQ filters resulting from CavernAmp's PeakingEqualizer.</summary>
+        </member>
         <member name="T:Cavern.QuickEQ.Utilities.CavernQuickEQAmp">
             <summary>Drastically faster versions of some functions written in C++.</summary>
             <remarks>Use alongside <see cref="T:Cavern.Utilities.CavernAmp"/>!</remarks>
         </member>
-        <member name="M:Cavern.QuickEQ.Utilities.CavernQuickEQAmp.FFTCache_Create(System.Int32)">
-            <summary>FFT cache constructor.</summary>
+        <member name="M:Cavern.QuickEQ.Utilities.CavernQuickEQAmp.FilterAnalyzer_Create(System.Int32,System.Double,System.Double,System.Double,System.Double,System.Int32)">
+            <summary>Filter analyzer constructor.</summary>
         </member>
-        <member name="M:Cavern.QuickEQ.Utilities.CavernQuickEQAmp.FFTCache_Size(System.IntPtr)">
-            <summary>Get the creation size of the FFT cache.</summary>
+        <member name="M:Cavern.QuickEQ.Utilities.CavernQuickEQAmp.FilterAnalyzer_AddPEQ(System.IntPtr,System.Double,System.Double,System.Double)">
+            <summary>Reset a filter with a PeakingEQ.</summary>
         </member>
-        <member name="M:Cavern.QuickEQ.Utilities.CavernQuickEQAmp.FFTCache_Dispose(System.IntPtr)">
-            <summary>Dispose an FFT cache.</summary>
+        <member name="M:Cavern.QuickEQ.Utilities.CavernQuickEQAmp.FilterAnalyzer_Dispose(System.IntPtr)">
+            <summary>Dispose a filter analyzer.</summary>
         </member>
-        <member name="M:Cavern.QuickEQ.Utilities.CavernQuickEQAmp.ProcessFFT(Cavern.Utilities.Complex[],System.Int32,System.IntPtr,System.Int32)">
-            <summary>Actual FFT processing, somewhat in-place.</summary>
+        <member name="M:Cavern.QuickEQ.Utilities.CavernQuickEQAmp.BruteForceStep(System.Single[],System.Int32,System.Single[],System.IntPtr)">
+            <summary>Measure a filter candidate for <see cref="M:Cavern.QuickEQ.Utilities.CavernQuickEQAmp.BruteForceQ(System.Single[],System.Int32,System.IntPtr,System.Double,System.Double)"/>.</summary>
         </member>
-        <member name="M:Cavern.QuickEQ.Utilities.CavernQuickEQAmp.ProcessFFT(System.Single[],System.Int32,System.IntPtr)">
-            <summary>Fourier-transform a signal in 1D. The result is the spectral power.</summary>
+        <member name="M:Cavern.QuickEQ.Utilities.CavernQuickEQAmp.BruteForceQ(System.Single[],System.Int32,System.IntPtr,System.Double,System.Double)">
+            <summary>Correct <paramref name="target"/> to the frequency response with the inverse of the found filter.</summary>
         </member>
-        <member name="M:Cavern.QuickEQ.Utilities.CavernQuickEQAmp.InPlaceFFTCall(Cavern.Utilities.Complex[],System.Int32,System.IntPtr)">
-            <summary>Fast Fourier transform a 2D signal while keeping the source array allocation.</summary>
-        </member>
-        <member name="M:Cavern.QuickEQ.Utilities.CavernQuickEQAmp.InPlaceFFT(Cavern.Utilities.Complex[],Cavern.QuickEQ.FFTCache)">
-            <summary>Fast Fourier transform a 2D signal while keeping the source array allocation.</summary>
-        </member>
-        <member name="M:Cavern.QuickEQ.Utilities.CavernQuickEQAmp.InPlaceFFTCall(System.Single[],System.Int32,System.IntPtr)">
-            <summary>Spectrum of a signal's FFT while keeping the source array allocation.</summary>
-        </member>
-        <member name="M:Cavern.QuickEQ.Utilities.CavernQuickEQAmp.InPlaceFFT(System.Single[],Cavern.QuickEQ.FFTCache)">
-            <summary>Spectrum of a signal's FFT while keeping the source array allocation.</summary>
-        </member>
-        <member name="M:Cavern.QuickEQ.Utilities.CavernQuickEQAmp.ProcessIFFT(Cavern.Utilities.Complex[],System.Int32,System.IntPtr,System.Int32)">
-            <summary>Outputs IFFT(X) * N.</summary>
-        </member>
-        <member name="M:Cavern.QuickEQ.Utilities.CavernQuickEQAmp.InPlaceIFFTCall(Cavern.Utilities.Complex[],System.Int32,System.IntPtr)">
-            <summary>Inverse Fast Fourier Transform of a transformed signal, while keeping the source array allocation.</summary>
-        </member>
-        <member name="M:Cavern.QuickEQ.Utilities.CavernQuickEQAmp.InPlaceIFFT(Cavern.Utilities.Complex[],Cavern.QuickEQ.FFTCache)">
-            <summary>Inverse Fast Fourier Transform of a transformed signal, while keeping the source array allocation.</summary>
+        <member name="M:Cavern.QuickEQ.Utilities.CavernQuickEQAmp.BruteForceBand(System.Single[],System.Int32,System.IntPtr,System.Int32,System.Int32)">
+            <summary>Finds a PeakingEQ to correct the worst problem on the input spectrum.</summary>
         </member>
         <member name="T:Cavern.QuickEQ.VerboseImpulseResponse">
             <summary>Contains an impulse response and data that can be calculated from it.</summary>

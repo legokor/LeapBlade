@@ -35,7 +35,7 @@
             <summary>Content channel count.</summary>
         </member>
         <member name="P:Cavern.Format.AudioReader.Length">
-            <summary>Content length in samples.</summary>
+            <summary>Content length in samples for a single channel.</summary>
         </member>
         <member name="P:Cavern.Format.AudioReader.SampleRate">
             <summary>Content sample rate.</summary>
@@ -69,6 +69,9 @@
         </member>
         <member name="M:Cavern.Format.AudioReader.Read">
             <summary>Read the entire file.</summary>
+        </member>
+        <member name="M:Cavern.Format.AudioReader.ReadClip">
+            <summary>Read the entire file and pack it in a <see cref="T:Cavern.Clip"/>.</summary>
         </member>
         <member name="M:Cavern.Format.AudioReader.ReadMultichannel">
             <summary>Read the entire file.</summary>
