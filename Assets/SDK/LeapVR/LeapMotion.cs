@@ -107,7 +107,7 @@ namespace LeapVR {
         /// <param name="handID">Hand ID</param>
         /// <returns>Palm position, or (-1, -1) if there's no hand</returns>
         public Vector3 PalmPosition(int handID = 0, int device = 0) {
-            if (lastFrames[device].Hands.Count > handID) {
+            if (lastFrames.Length > device && lastFrames[device].Hands.Count > handID) {
                 Vector pos = lastFrames[device].Hands[handID].PalmPosition;
                 return new Vector3(pos.x, pos.y, pos.z);
             } else
@@ -259,11 +259,13 @@ namespace LeapVR {
         /// Get the first detected left hand's ID or -1 if it's not found.
         /// </summary>
         public int FirstLeftHand(int device = 0) {
-            List<Hand> hands = lastFrames[device].Hands;
-            int handCount = hands.Count;
-            for (int i = 0; i < handCount; ++i)
-                if (hands[i].IsLeft)
-                    return i;
+            if (device < lastFrames.Length) {
+                List<Hand> hands = lastFrames[device].Hands;
+                int handCount = hands.Count;
+                for (int i = 0; i < handCount; ++i)
+                    if (!hands[i].IsLeft) // This is inverted
+                        return i;
+            }
             return -1;
         }
 
@@ -272,10 +274,12 @@ namespace LeapVR {
         /// </summary>
         /// <returns></returns>
         public int FirstRightHand(int device = 0) {
-            List<Hand> hands = lastFrames[device].Hands;
-            for (int i = 0, handCount = hands.Count; i < handCount; ++i)
-                if (!hands[i].IsLeft)
-                    return i;
+            if (device < lastFrames.Length) {
+                List<Hand> hands = lastFrames[device].Hands;
+                for (int i = 0, handCount = hands.Count; i < handCount; ++i)
+                    if (hands[i].IsLeft) // This is inverted
+                        return i;
+            }
             return -1;
         }
 
