@@ -165,6 +165,7 @@ MonoBehaviour:
   Size: 0
   DopplerLevel: 0
   VolumeRolloff: 1
+  DistanceSimulation: 0
   intro: {fileID: 8300000, guid: 71189a0d05f94404baf88dced5126670, type: 3}
   loopClip: {fileID: 8300000, guid: 815a1486f0e55ec4bac6edd37cabba46, type: 3}
 --- !u!4 &97815703
@@ -488,6 +489,7 @@ MonoBehaviour:
   Size: 0
   DopplerLevel: 0
   VolumeRolloff: 1
+  DistanceSimulation: 0
   intro: {fileID: 8300000, guid: c2dd495c88b5a7643a40c2c56bd4f971, type: 3}
   loopClip: {fileID: 8300000, guid: a6cb15987bb4eb84cb8ec06145f7ecd1, type: 3}
 --- !u!4 &829120055
@@ -975,6 +977,7 @@ MonoBehaviour:
   Size: 0
   DopplerLevel: 0
   VolumeRolloff: 0
+  DistanceSimulation: 0
 --- !u!4 &1082007961
 Transform:
   m_ObjectHideFlags: 0
@@ -1031,6 +1034,7 @@ MonoBehaviour:
   Size: 0
   DopplerLevel: 0
   VolumeRolloff: 1
+  DistanceSimulation: 0
   intro: {fileID: 8300000, guid: 10dabf27aa3b7ee49907fb69694006d1, type: 3}
   loopClip: {fileID: 8300000, guid: 10defd172450dcf42af5b83be53886ed, type: 3}
 --- !u!4 &1115246328
@@ -1204,6 +1208,7 @@ MonoBehaviour:
   Size: 0
   DopplerLevel: 0
   VolumeRolloff: 1
+  DistanceSimulation: 0
   intro: {fileID: 8300000, guid: 7d4726b657f31074f93d969025727a43, type: 3}
   loopClip: {fileID: 8300000, guid: 503fe301422ca274fa65262205d44879, type: 3}
 --- !u!4 &1428383003
@@ -1625,6 +1630,7 @@ MonoBehaviour:
   Size: 0
   DopplerLevel: 0
   VolumeRolloff: 0
+  DistanceSimulation: 0
   intro: {fileID: 8300000, guid: b0ba85426a8aaa946baf669a0737f786, type: 3}
   loopClip: {fileID: 8300000, guid: cf52d829e3a216d45999fd811b697e28, type: 3}
 --- !u!114 &1553068269
@@ -1941,6 +1947,7 @@ MonoBehaviour:
   Size: 0
   DopplerLevel: 0
   VolumeRolloff: 1
+  DistanceSimulation: 0
   intro: {fileID: 8300000, guid: d64f9cd24730b0c4bb3641a223a997b9, type: 3}
   loopClip: {fileID: 8300000, guid: 2b637a39dd21d38448f22b4b5cf2e2f5, type: 3}
 --- !u!4 &1793469620
@@ -1999,6 +2006,7 @@ MonoBehaviour:
   Size: 0
   DopplerLevel: 0
   VolumeRolloff: 1
+  DistanceSimulation: 0
   intro: {fileID: 8300000, guid: 9f1eac0432c0fdd43a1356ea26de496e, type: 3}
   loopClip: {fileID: 8300000, guid: 183c6473e7e2fc8418631e38bcb0e31e, type: 3}
 --- !u!4 &1948118892

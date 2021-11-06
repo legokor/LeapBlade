@@ -83,6 +83,8 @@ namespace LeapVR {
         /// </summary>
         public bool Connected => controller.IsConnected;
 
+        public int Devices => lastFrames.Length;
+
         public Frame GetFrame(int device = 0) => lastFrames[device];
 
         /// <summary>

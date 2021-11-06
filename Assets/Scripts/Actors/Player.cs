@@ -58,5 +58,29 @@ namespace Actors {
                     Attack(AttackDirection.Right);
             }
         }
+
+        public void AttackUp() {
+            if (Handler && !Handler.Playing)
+                return;
+            Attack(AttackDirection.Up);
+        }
+
+        public void AttackDown() {
+            if (Handler && !Handler.Playing)
+                return;
+            Attack(AttackDirection.Down);
+        }
+
+        public void AttackLeft() {
+            if (Handler && !Handler.Playing)
+                return;
+            Attack(AttackDirection.Left);
+        }
+
+        public void AttackRight() {
+            if (Handler && !Handler.Playing)
+                return;
+            Attack(AttackDirection.Right);
+        }
     }
 }

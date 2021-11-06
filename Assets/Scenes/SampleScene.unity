@@ -4307,6 +4307,89 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bar: {fileID: 819774842}
+--- !u!114 &378188101
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 378188099}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e000bd536a1e0404cbcf8fa0721f1fd1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  deviceID: 1
+  anyHand: 1
+  leftHand: 0
+  requiredSpeed: 10
+  timeout: 0.1
+  forward:
+    m_PersistentCalls:
+      m_Calls: []
+  backwards:
+    m_PersistentCalls:
+      m_Calls: []
+  left:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1014537763}
+        m_TargetAssemblyTypeName: Actors.Player, Assembly-CSharp
+        m_MethodName: AttackLeft
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  right:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1014537763}
+        m_TargetAssemblyTypeName: Actors.Player, Assembly-CSharp
+        m_MethodName: AttackRight
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  up:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1014537763}
+        m_TargetAssemblyTypeName: Actors.Player, Assembly-CSharp
+        m_MethodName: AttackUp
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  down:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1014537763}
+        m_TargetAssemblyTypeName: Actors.Player, Assembly-CSharp
+        m_MethodName: AttackDown
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!4 &384462602 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 442488, guid: ec78ebca7517fb745a45a931cb06d2bd, type: 3}
@@ -11319,6 +11402,7 @@ GameObject:
   - component: {fileID: 963194234}
   - component: {fileID: 963194230}
   - component: {fileID: 963194231}
+  - component: {fileID: 963194235}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -11471,6 +11555,7 @@ MonoBehaviour:
   Size: 0
   DopplerLevel: 0
   VolumeRolloff: 0
+  DistanceSimulation: 0
 --- !u!114 &963194232
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11545,6 +11630,22 @@ MonoBehaviour:
   vignetteShader: {fileID: 4800000, guid: 627943dc7a9a74286b70a4f694a0acd5, type: 3}
   separableBlurShader: {fileID: 4800000, guid: e97c14fbb5ea04c3a902cc533d7fc5d1, type: 3}
   chromAberrationShader: {fileID: 4800000, guid: 2b4f29398d9484ccfa9fd220449f5eee, type: 3}
+--- !u!114 &963194235
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 963194225}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45f0bce922ffd4c47800e7895fe4e35a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  headMounted: 0
+  connectionTimeout: 5
+  leapLowerBounds: {x: -200, y: 100, z: -112.5}
+  leapUpperBounds: {x: 200, y: 300, z: 112.5}
 --- !u!4 &965825452 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 429508, guid: 9c74caa742791864f9c678287121e6c9, type: 3}
@@ -11992,6 +12093,7 @@ MonoBehaviour:
   Size: 0
   DopplerLevel: 0
   VolumeRolloff: 0
+  DistanceSimulation: 0
 --- !u!4 &1005930620
 Transform:
   m_ObjectHideFlags: 0
@@ -15765,6 +15867,7 @@ MonoBehaviour:
   Size: 0
   DopplerLevel: 0
   VolumeRolloff: 0
+  DistanceSimulation: 0
 --- !u!114 &1244525675
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18319,6 +18422,89 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bar: {fileID: 977253115}
+--- !u!114 &1531881648
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1531881646}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e000bd536a1e0404cbcf8fa0721f1fd1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  deviceID: 0
+  anyHand: 1
+  leftHand: 0
+  requiredSpeed: 10
+  timeout: 0.1
+  forward:
+    m_PersistentCalls:
+      m_Calls: []
+  backwards:
+    m_PersistentCalls:
+      m_Calls: []
+  left:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 689202093}
+        m_TargetAssemblyTypeName: Actors.Player, Assembly-CSharp
+        m_MethodName: AttackLeft
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  right:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 689202093}
+        m_TargetAssemblyTypeName: Actors.Player, Assembly-CSharp
+        m_MethodName: AttackRight
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  up:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 689202093}
+        m_TargetAssemblyTypeName: Actors.Player, Assembly-CSharp
+        m_MethodName: AttackUp
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  down:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 689202093}
+        m_TargetAssemblyTypeName: Actors.Player, Assembly-CSharp
+        m_MethodName: AttackDown
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!4 &1531881653 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4968447437888713482, guid: a93ff086c6d07fd4d8f2c7c386c3f0dc, type: 3}
