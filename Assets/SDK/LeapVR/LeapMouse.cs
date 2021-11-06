@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -17,6 +18,8 @@ namespace LeapVR {
         public Vector2 mouseSize = new Vector2(64, 64);
         [Tooltip("The center of the cursor is the selection.")]
         public bool centerPointer = true;
+        [Tooltip("Raycaster for finding UI elements.")]
+        public GraphicRaycaster raycaster;
 
         /// <summary>
         /// A tap happened in the last frame.
@@ -115,24 +118,31 @@ namespace LeapVR {
 
         void Update() {
             handPosition = ScreenPosition();
+            pointer.position = new Vector2(handPosition.x, Screen.height - handPosition.y);
             int fingerCount = LeapMotion.Instance.ExtendedFingers();
             tapped = fingerCount == 0 && lastFingerCount != 0;
-            if (Physics.Raycast(SBS.StereoRay(new Vector2(handPosition.x, Screen.height - handPosition.y)), out RaycastHit hit)) {
-                Selectable hovered = hit.collider.gameObject.GetComponentInChildren<Selectable>();
-                if (hovered) {
-                    if (lastHovered && hovered != lastHovered)
+            List<RaycastResult> hovered = new List<RaycastResult>();
+            raycaster.Raycast(pointer, hovered);
+            if (hovered.Count != 0) {
+                for (int i = 0; i < hovered.Count; ++i) {
+                    Selectable current = hovered[i].gameObject.GetComponent<Selectable>();
+                    if (current == null)
+                        continue;
+                    if (current) {
+                        if (lastHovered && current != lastHovered)
+                            lastHovered.OnPointerExit(pointer);
+                        current.OnPointerEnter(pointer);
+                        lastHovered = current;
+                        if (ActionDown())
+                            if (current.GetType() == typeof(Button))
+                                ((Button)current).OnPointerClick(pointer);
+                            else if (current.GetType() == typeof(Toggle))
+                                ((Toggle)current).isOn ^= true;
+                            else
+                                current.Select();
+                    } else if (lastHovered)
                         lastHovered.OnPointerExit(pointer);
-                    hovered.OnPointerEnter(pointer);
-                    lastHovered = hovered;
-                    if (ActionDown())
-                        if (hovered.GetType() == typeof(Button))
-                            ((Button)hovered).OnPointerClick(pointer);
-                        else if (hovered.GetType() == typeof(Toggle))
-                            ((Toggle)hovered).isOn ^= true;
-                        else
-                            hovered.Select();
-                } else if (lastHovered)
-                    lastHovered.OnPointerExit(pointer);
+                }
             } else if (lastHovered)
                 lastHovered.OnPointerExit(pointer);
             lastFingerCount = fingerCount;

@@ -1643,6 +1643,7 @@ MonoBehaviour:
   offHandIcon: {fileID: 0}
   mouseSize: {x: 64, y: 64}
   centerPointer: 1
+  raycaster: {fileID: 931230696}
 --- !u!114 &1553068270
 MonoBehaviour:
   m_ObjectHideFlags: 0

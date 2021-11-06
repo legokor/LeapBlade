@@ -59,7 +59,7 @@ namespace LeapVR {
                 }
             }
             for (int i = 0; i < NewHands; ++i) {
-                Hand h = Leap.RawFrame.Hands[i];
+                Hand h = Leap.GetFrame().Hands[i];
                 Material JointMat = Hands[i].JointMat ? Hands[i].JointMat : Hands[i].JointMat = new Material(Shader.Find("Standard")) {
                     color = Color.HSVToRGB(Random.value, 1, 1)
                 };

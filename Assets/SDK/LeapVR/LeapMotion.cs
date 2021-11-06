@@ -1,4 +1,5 @@
 ﻿using Leap;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -18,14 +19,9 @@ namespace LeapVR {
         public Vector3 leapUpperBounds = new Vector3(200, 300, 112.5f);
 
         /// <summary>
-        /// The last frame in the Leap Motion SDK's format.
-        /// </summary>
-        public Frame RawFrame => lastFrame;
-
-        /// <summary>
         /// Connected Leap Motion device.
         /// </summary>
-        Controller device;
+        Controller controller;
 
         /// <summary>
         /// First time a connection was tried to the controller;
@@ -35,7 +31,7 @@ namespace LeapVR {
         /// <summary>
         /// The Leap Motion frame just before the game's frame update.
         /// </summary>
-        Frame lastFrame = new Frame();
+        Frame[] lastFrames = new Frame[0];
 
         /// <summary>
         /// A position indicating unavailable Leap Motion data (e.g. no hands are detected).
@@ -46,8 +42,23 @@ namespace LeapVR {
         /// Connect to the device automatically on creation.
         /// </summary>
         void Awake() {
-            device = new Controller();
+            controller = new Controller();
+            controller.FrameReady += OnFrame;
+            controller.Device += Subscribe; // TODO: handle losses
             started = Time.unscaledTime;
+        }
+
+        private void OnFrame(object _, FrameEventArgs e) {
+            lastFrames[e.frame.DeviceID - 1] = e.frame; // TODO: index by SN
+        }
+
+        /// <summary>
+        /// Subscribe to a device when it's connected.
+        /// </summary>
+        private void Subscribe(object _, DeviceEventArgs e) {
+            Array.Resize(ref lastFrames, lastFrames.Length + 1); // TODO: by connected device count
+            lastFrames[lastFrames.Length - 1] = new Frame();
+            controller.SubscribeToDeviceEvents(e.Device);
         }
 
         /// <summary>
@@ -62,36 +73,42 @@ namespace LeapVR {
         /// Safely disconnect the device after use.
         /// </summary>
         void OnDestroy() {
-            if (device.IsConnected)
-                device.ClearPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
-            device.StopConnection();
+            if (controller.IsConnected)
+                controller.ClearPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
+            controller.StopConnection();
         }
 
         /// <summary>
         /// Returns if a connected Leap Motion has been found.
         /// </summary>
-        public bool Connected => device.IsConnected;
+        public bool Connected => controller.IsConnected;
+
+        public Frame GetFrame(int device = 0) => lastFrames[device];
 
         /// <summary>
         /// Check if the user is using the controller.
         /// </summary>
         /// <returns>True if there are any hands detected</returns>
-        public bool IsUsed() => lastFrame.Hands.Count != 0;
+        public bool IsUsed(int device = 0) {
+            if (device < lastFrames.Length)
+                return lastFrames[device].Hands.Count != 0;
+            return false;
+        }
 
         /// <summary>
         /// Get count of hands.
         /// </summary>
         /// <returns>The number of hands the device detects</returns>
-        public int GetHandCount() => lastFrame.Hands.Count;
+        public int GetHandCount(int device = 0) => lastFrames[device].Hands.Count;
 
         /// <summary>
         /// Raw palm position data.
         /// </summary>
         /// <param name="handID">Hand ID</param>
         /// <returns>Palm position, or (-1, -1) if there's no hand</returns>
-        public Vector3 PalmPosition(int handID = 0) {
-            if (lastFrame.Hands.Count > handID) {
-                Vector pos = lastFrame.Hands[handID].PalmPosition;
+        public Vector3 PalmPosition(int handID = 0, int device = 0) {
+            if (lastFrames[device].Hands.Count > handID) {
+                Vector pos = lastFrames[device].Hands[handID].PalmPosition;
                 return new Vector3(pos.x, pos.y, pos.z);
             } else
                 return notAvailable;
@@ -100,10 +117,9 @@ namespace LeapVR {
         /// <summary>
         /// Palm position on screen, on a vertical plane.
         /// </summary>
-        /// <param name="handID">Hand ID</param>
         /// <returns>Palm position on screen, or (-1, -1) if there's no hand</returns>
-        public Vector2 PalmOnScreenXY(int handID = 0) {
-            List<Hand> hands = lastFrame.Hands;
+        public Vector2 PalmOnScreenXY(int handID = 0, int device = 0) {
+            List<Hand> hands = lastFrames[device].Hands;
             if (hands.Count > handID) {
                 Hand checkedHand = hands[handID];
                 Vector2 fromLeap = new Vector2(checkedHand.PalmPosition.x, -checkedHand.PalmPosition.y + leapLowerBounds.y + leapUpperBounds.y);
@@ -119,10 +135,9 @@ namespace LeapVR {
         /// <summary>
         /// Palm position on or off screen, on a vertical plane.
         /// </summary>
-        /// <param name="handID">Hand ID</param>
         /// <returns>Palm position on screen, or (-1, -1) if there's no hand</returns>
-        public Vector2 PalmOnScreenXYUnclamped(int handID = 0) {
-            List<Hand> hands = lastFrame.Hands;
+        public Vector2 PalmOnScreenXYUnclamped(int handID = 0, int device = 0) {
+            List<Hand> hands = lastFrames[device].Hands;
             if (hands.Count > handID) {
                 Hand checkedHand = hands[handID];
                 Vector2 fromLeap = new Vector2(checkedHand.PalmPosition.x,
@@ -138,8 +153,8 @@ namespace LeapVR {
         /// </summary>
         /// <param name="handID">Hand ID</param>
         /// <returns>Palm position on viewport, or (-1, -1) if there's no hand</returns>
-        public Vector2 PalmOnViewportXY(int handID = 0) {
-            List<Hand> hands = lastFrame.Hands;
+        public Vector2 PalmOnViewportXY(int handID = 0, int device = 0) {
+            List<Hand> hands = lastFrames[device].Hands;
             if (hands.Count > handID) {
                 Hand checkedHand = hands[handID];
                 Vector2 FromLeap = new Vector2(checkedHand.PalmPosition.x, -checkedHand.PalmPosition.y + leapLowerBounds.y + leapUpperBounds.y);
@@ -155,10 +170,9 @@ namespace LeapVR {
         /// <summary>
         /// Palm position on screen, on a horizontal plane.
         /// </summary>
-        /// <param name="handID">Hand ID</param>
         /// <returns>Palm position on screen, or (-1, -1) if there's no hand</returns>
-        public Vector2 PalmOnScreenXZ(int handID = 0) {
-            List<Hand> hands = lastFrame.Hands;
+        public Vector2 PalmOnScreenXZ(int handID = 0, int device = 0) {
+            List<Hand> hands = lastFrames[device].Hands;
             if (hands.Count > handID) {
                 Hand checkedHand = hands[handID];
                 return new Vector2(
@@ -173,10 +187,9 @@ namespace LeapVR {
         /// <summary>
         /// Palm position on viewport, on a horizontal plane.
         /// </summary>
-        /// <param name="handID">Hand ID</param>
         /// <returns>Palm position on viewport, or (-1, -1) if there's no hand</returns>
-        public Vector2 PalmOnViewportXZ(int handID = 0) {
-            List<Hand> hands = lastFrame.Hands;
+        public Vector2 PalmOnViewportXZ(int handID = 0, int device = 0) {
+            List<Hand> hands = lastFrames[device].Hands;
             if (hands.Count > handID) {
                 Hand checkedHand = hands[handID];
                 return new Vector2(
@@ -191,10 +204,9 @@ namespace LeapVR {
         /// <summary>
         /// Furthest tip on screen on a vertical plane.
         /// </summary>
-        /// <param name="handID">Hand ID</param>
         /// <returns>Furthest tip position on screen, or (-1, -1) if there's no hand</returns>
-        public Vector2 SinglePointOnScreenXY(int handID = 0) {
-            List<Hand> hands = lastFrame.Hands;
+        public Vector2 SinglePointOnScreenXY(int handID = 0, int device = 0) {
+            List<Hand> hands = lastFrames[device].Hands;
             if (hands.Count > handID) {
                 Hand currentHand = hands[handID];
                 Finger furthest = currentHand.Fingers[0];
@@ -229,11 +241,12 @@ namespace LeapVR {
         /// <summary>
         /// Extended fingers for a given hand.
         /// </summary>
-        /// <param name="handID">Hand ID</param>
         /// <returns>Extended finger count</returns>
-        public int ExtendedFingers(int handID = 0) {
+        public int ExtendedFingers(int handID = 0, int device = 0) {
+            if (device >= lastFrames.Length)
+                return 0;
             int counter = 0;
-            List<Hand> hands = lastFrame.Hands;
+            List<Hand> hands = lastFrames[device].Hands;
             if (hands.Count > handID) {
                 foreach (Finger checkedFinger in hands[handID].Fingers)
                     if (checkedFinger.IsExtended)
@@ -245,9 +258,8 @@ namespace LeapVR {
         /// <summary>
         /// Get the first detected left hand's ID or -1 if it's not found.
         /// </summary>
-        /// <returns></returns>
-        public int FirstLeftHand() {
-            List<Hand> hands = lastFrame.Hands;
+        public int FirstLeftHand(int device = 0) {
+            List<Hand> hands = lastFrames[device].Hands;
             int handCount = hands.Count;
             for (int i = 0; i < handCount; ++i)
                 if (hands[i].IsLeft)
@@ -259,8 +271,8 @@ namespace LeapVR {
         /// Get the first detected right hand's ID or -1 if it's not found.
         /// </summary>
         /// <returns></returns>
-        public int FirstRightHand() {
-            List<Hand> hands = lastFrame.Hands;
+        public int FirstRightHand(int device = 0) {
+            List<Hand> hands = lastFrames[device].Hands;
             for (int i = 0, handCount = hands.Count; i < handCount; ++i)
                 if (!hands[i].IsLeft)
                     return i;
@@ -270,12 +282,11 @@ namespace LeapVR {
         /// <summary>
         /// Get pointing direction if the hand is pointing a direction, relative to the controller.
         /// </summary>
-        /// <param name="handID">Hand ID</param>
         /// <returns>Pointing direction vector for the given hand or null if it does not exist or point in a direction</returns>
-        public Vector3? PointingDirection(int handID = 0) {
+        public Vector3? PointingDirection(int handID = 0, int device = 0) {
             int fingers = ExtendedFingers(handID);
-            if ((fingers == 1 || fingers == 2) && lastFrame.Hands.Count > handID) {
-                foreach (Finger checkedFinger in lastFrame.Hands[handID].Fingers) {
+            if ((fingers == 1 || fingers == 2) && lastFrames[device].Hands.Count > handID) {
+                foreach (Finger checkedFinger in lastFrames[device].Hands[handID].Fingers) {
                     if (checkedFinger.IsExtended) {
                         Vector tipPos = checkedFinger.Bone(Bone.BoneType.TYPE_DISTAL).Basis.translation,
                             preTip = checkedFinger.Bone(Bone.BoneType.TYPE_INTERMEDIATE).Basis.translation;
@@ -289,12 +300,11 @@ namespace LeapVR {
         /// <summary>
         /// Get a hand's rotation by averaging where each finger's base points.
         /// </summary>
-        /// <param name="handID">Hand ID</param>
         /// <returns>Hand rotation</returns>
-        public Quaternion? HandRotation(int handID = 0) {
-            if (lastFrame.Hands.Count > handID) {
+        public Quaternion? HandRotation(int handID = 0, int device = 0) {
+            if (lastFrames[device].Hands.Count > handID) {
                 Vector3 pointing = Vector3.zero;
-                foreach (Finger checkedFinger in lastFrame.Hands[handID].Fingers) {
+                foreach (Finger checkedFinger in lastFrames[device].Hands[handID].Fingers) {
                     if (checkedFinger.Type != Finger.FingerType.TYPE_THUMB) {
                         Vector fingerBase = checkedFinger.Bone(checkedFinger.IsExtended ?
                                 Bone.BoneType.TYPE_PROXIMAL : Bone.BoneType.TYPE_METACARPAL).Basis.translation,
@@ -304,7 +314,7 @@ namespace LeapVR {
                     }
                 }
                 if (pointing != Vector3.zero) {
-                    Vector palmNormal = lastFrame.Hands[handID].PalmNormal;
+                    Vector palmNormal = lastFrames[device].Hands[handID].PalmNormal;
                     Vector3 forward = Quaternion.LookRotation(pointing, Vector3.up).eulerAngles;
                     Vector3 normal = Quaternion.FromToRotation(Vector3.up, new Vector3(palmNormal.x, palmNormal.y, palmNormal.z)).eulerAngles;
                     return Quaternion.Euler(-forward.x, -forward.y, -normal.z);
@@ -317,9 +327,8 @@ namespace LeapVR {
         /// Poll the head mounted flag and get last Leap frame in each application frame.
         /// </summary>
         void Update() {
-            if (headMounted && !device.IsPolicySet(Controller.PolicyFlag.POLICY_OPTIMIZE_HMD))
-                device.SetPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
-            lastFrame = device.Frame();
+            if (headMounted && !controller.IsPolicySet(Controller.PolicyFlag.POLICY_OPTIMIZE_HMD))
+                controller.SetPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
 
             if (!Connected && !float.IsNaN(started) && Time.unscaledTime - started > connectionTimeout) {
                 Reconnect();
