@@ -128,6 +128,9 @@ namespace Actors {
                 hitCutoff = clip.Hit - clip.Start;
                 CurrentAttack = clip.Direction;
                 nextDamage = clip.Damage;
+            } else {
+                animCutoff = float.NaN;
+                hitCutoff = float.NaN;
             }
         }
 
