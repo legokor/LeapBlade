@@ -1,6 +1,7 @@
 ﻿using Actors;
 using Cavern;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace Game {
@@ -46,6 +47,11 @@ namespace Game {
 
         public AudioClip[] victorySounds;
 
+        /// <summary>
+        /// Call these actions when a player lost a round, but not the match.
+        /// </summary>
+        public UnityEvent OnKO;
+
         // TODO: death sounds by the same logic
 
         /// <summary>
@@ -61,6 +67,8 @@ namespace Game {
         public int roundTime = 30;
         public Text roundTimeText;
         public AnnouncementText roundText;
+
+        public static Announcer Instance { get; private set; }
 
         AudioSource3D source;
 
@@ -118,11 +126,14 @@ namespace Game {
             if (fighter1Wins == roundCount || fighter2Wins == roundCount) {
                 source.PlayOneShot(victorySounds[Random.Range(0, victorySounds.Length)]);
                 loser.Died();
-            } else
+            } else {
                 loser.KnockedOut();
+                OnKO.Invoke();
+            }
         }
 
         void Start() {
+            Instance = this;
             fighterLeft.Handler = fighterRight.Handler = this;
             source = GetComponent<AudioSource3D>();
             PrepareNextRound();
